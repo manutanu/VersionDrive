@@ -35,7 +35,8 @@ export class ShareComponent implements OnInit {
   useremails;
 
   constructor(private fileservice:FileListService,sanitizer: DomSanitizer,private modalService: NgbModal,private form:FormBuilder,private router:Router,private http:HttpClient,private userservice:UserdetailsFetchService) { 
-    
+    if(sessionStorage.getItem('username')==='' || sessionStorage.getItem("token")==='')
+    this.router.navigate(['/login']);
     this.fileservice.getAllSharedFiles().subscribe(data=>{
       this.fileListobject=data;
       //http://localhost:8080/viewdownload/view/{{userid}}/

@@ -21,7 +21,7 @@
                   <button class="btn btn-success" [disabled]="!selectedFiles" (click)="uploadFile()">Upload</button>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-dark" (click)="modal.close('close')">Close</button>
+                  <button type="button" class="btn btn-danger" (click)="modal.close('close')">Close</button>
                 </div>
               </ng-template>
 
@@ -34,8 +34,12 @@
                       <div class="card-icon">
                           <i class="material-icons">folder</i>
                       </div>
-                      <h3 class="card-title">{{fileobject.filename}}</h3>
-                      <p class="card-category"> {{fileobject.creationDate}}</p>
+                      <h4 class="card-title">{{fileobject.filename}}</h4>
+                      <!-- <i class="material-icons">calendar_today</i>  -->
+                      <p class="card-category" style="
+                      font-size: large;
+                      font-weight: 900;
+                  ">{{fileobject.creationDate}}</p>
                   </div>
                   <div class="card-footer">
                     <div class="dropdown">
@@ -81,9 +85,10 @@
                 right: 200px;
                 padding: 0px;
                 height: 100px;">
-                  <iframe [src]="viewfileurls[i]" width="800px" height="800px" *ngIf='fileType[i] === "PDF"' style="    width: 100%;
+                  <iframe [src]="viewfileurls[i]" width="800px" height="800px" *ngIf='fileType[i] === "PDF"' style="    width: 100%; background-color:white
                     "></iframe>
-                  <!-- <embed [src]="viewfileurls[i]" width="800px" height="1100px"  *ngIf='viewflag[i] && fileType[i] === "PDF"'/> -->
+                  <!-- <embed [src]="viewfileurls[i]" width="800px" height="1100px"  *ngIf='viewflag[i] && fileType[i] === "PDF"' style="    width: 100%;
+                    "/> -->
                 </div>
       
                 <!-- Can be done using iframe -->
@@ -140,7 +145,7 @@
                     </button>
                   </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-dark" (click)="modal.close('close')">Close</button>
+                  <button type="button" class="btn btn-danger" (click)="modal.close('close')">Close</button>
                 </div>
               </ng-template>
 

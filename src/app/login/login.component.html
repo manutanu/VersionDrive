@@ -1,4 +1,4 @@
-<div class="container">
+<!-- <div class="container">
   <div style="top:20px;" class="col-first" style="padding-top:10px">
       <form [formGroup]="formModelobject" (ngSubmit)="onSubmit(formModelobject.value)">
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="top:50px;">
@@ -16,52 +16,64 @@
       </form>
   </div>
   
-  <a [routerLink]="['/register']">Register</a>
-  <!-- 
-  <section class="banner-area organic-breadcrumb" style="height: 300px;
-  width: 180%;
-      right: 300px;">
+  <a [routerLink]="['/register']">Register</a> -->
+
+  <body class="login-page sidebar-collapse">
+        
+        <div class="page-header header-filter" style="background-image: url('../assets/img/bg7.jpg'); background-size: cover; background-position: top center;">
           <div class="container">
-              <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
-                  <div class="col-first">
-                      <h1>Login/Register</h1>
-                  </div>
-              </div>
-          </div>
-      </section>
-  
-  <section class="login_box_area section_gap">
-      <div class="container">
-          <div class="row">
-              <div class="col-lg-6">
-                  <div class="login_box_img">
-                      <img class="img-fluid" src="assets/img/login.jpg" alt="">
-                      <div class="hover">
-                          <h4>New to our website?</h4>
-                          <p>There are advances being made in science and technology everyday, and a good example of this is the</p>
-                          <a class="primary-btn" >Create an Account</a>
+            <div class="row">
+              <div class="col-lg-4 col-md-6 ml-auto mr-auto" style="top: 110px;">
+                <div class="card card-login">
+                  <form class="form" method="" action="">
+                    <div class="card-header card-header-primary text-center">
+                      <h4 class="card-title">Login</h4>
+                      <div class="social-line">
+                        <a href="#pablo" class="btn btn-just-icon btn-link">
+                          <i class="fa fa-facebook-square"></i>
+                        </a>
+                        <a href="#pablo" class="btn btn-just-icon btn-link">
+                          <i class="fa fa-twitter"></i>
+                        </a>
+                        <a href="#pablo" class="btn btn-just-icon btn-link">
+                          <i class="fa fa-google-plus"></i>
+                        </a>
                       </div>
-                  </div>
+                    </div>
+                   
+                    <div class="card-body">
+                            <form [formGroup]="formModelobject" (ngSubmit)="onSubmit(formModelobject.value)">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="material-icons">face</i>
+                          </span>
+                        </div>
+                        <input type="text" class="form-control" formControlName="username"  placeholder="Username...">
+                      </div>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="material-icons">lock_outline</i>
+                          </span>
+                        </div>
+                        <input type="password" class="form-control" formControlName="password" placeholder="Password...">
+                      </div>
+                      <!-- <button  class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" type="submit" style="    top: 130px;
+                     right: 300px;"><i class="material-icon">Login</i></button> -->
+                     <button type="submit" class="btn btn-primary btn-round" style="
+                     top: 30px;
+                 ">Login</button>
+                     </form>
+                    </div>
+                    <div class="footer text-center">
+                      <a [routerLink]="['/register']" class="btn btn-primary btn-link btn-wd btn-lg">dont have account! Register </a>
+                    </div>
+                  </form>
+                </div>
               </div>
-              <div class="col-lg-6">
-                  <div class="login_form_inner">
-                      <h3>Log in to enter</h3>
-                      <form [formGroup]="formModelobject" (ngSubmit)="onSubmit(formModelobject.value)" class="row login_form"   id="contactForm" novalidate="novalidate">
-                          <div class="col-md-12 form-group">
-                              <input type="text" class="form-control" id="name" formControlName="username">
-                <label class="mdl-textfield__label" for="sample1">UserName</label>
-                          </div>
-                          <div class="col-md-12 form-group">
-                              <input type="text" class="form-control" id="name" formControlName="password">
-                              <!-- <label class="mdl-textfield__label" for="sample1">password</label> 
-                          </div>
-                          <div class="col-md-12 form-group">
-                              <button type="submit" value="submit" class="primary-btn">Log In</button>
-                              <a href="#">Forgot Password?</a>
-                          </div>
-                      </form>
-                  </div>
-              </div>
+            </div>
           </div>
-      </div>
-  </section> -->
+         
+        </div>
+       

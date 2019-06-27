@@ -14,8 +14,11 @@ export class NavbarComponent implements OnInit {
       mobile_menu_visible: any = 0;
     private toggleButton: any;
     private sidebarVisible: boolean;
+    private username=sessionStorage.getItem('username');
 
     constructor(location: Location,  private element: ElementRef, private router: Router) {
+        if(sessionStorage.getItem('username')==='' || sessionStorage.getItem("token")==='')
+        this.router.navigate(['/login']);
       this.location = location;
           this.sidebarVisible = false;
     }
@@ -121,5 +124,13 @@ export class NavbarComponent implements OnInit {
           }
       }
       return 'Dashboard';
+    }
+
+    logout(){
+        console.log("here i am");
+        sessionStorage.setItem("token","");
+        sessionStorage.setItem("username","");
+        sessionStorage.setItem("userid","");
+        this.router.navigate(['../login']);
     }
 }

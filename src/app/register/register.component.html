@@ -1,4 +1,4 @@
-<div class="container">
+<!-- <div class="container">
   <h2>Register</h2>
     <div style="top:20px;" class="col-first" style="padding-top:10px">
         <form [formGroup]="formModelobject" (ngSubmit)="onSubmit(formModelobject.value)">
@@ -32,3 +32,112 @@
         <p *ngIf="errormessageFlaguseremail">
             <ngb-alert type="danger" (close)="close()" >This email is already in use !</ngb-alert>
           </p>
+ -->
+
+          <!-- <div class="container">
+  <div style="top:20px;" class="col-first" style="padding-top:10px">
+      <form [formGroup]="formModelobject" (ngSubmit)="onSubmit(formModelobject.value)">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="top:50px;">
+                <input class="mdl-textfield__input" type="text" id="sample1" formControlName="username" autofocus>
+                <label class="mdl-textfield__label" for="sample1">UserName</label>
+              </div>
+              <br />
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="top:80px;">
+                      <input class="mdl-textfield__input" type="password" id="sample1" formControlName="password" >
+                      <label class="mdl-textfield__label" for="sample1">password</label>
+                    </div>
+  
+              <button  class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" type="submit" style="    top: 130px;
+              right: 300px;"><i class="material-icon">Login</i></button>
+      </form>
+  </div>
+  
+  <a [routerLink]="['/register']">Register</a> -->
+
+  <body class="login-page sidebar-collapse">
+        
+      <div class="page-header header-filter" style="background-image: url('../assets/img/bg7.jpg'); background-size: cover; background-position: top center;">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-4 col-md-6 ml-auto mr-auto" style="top: 110px;">
+              <div class="card card-login">
+                <form class="form" method="" action="">
+                  <div class="card-header card-header-primary text-center">
+                    <h4 class="card-title">Register</h4>
+                    <div class="social-line">
+                      <a href="#pablo" class="btn btn-just-icon btn-link">
+                        <i class="fa fa-facebook-square"></i>
+                      </a>
+                      <a href="#pablo" class="btn btn-just-icon btn-link">
+                        <i class="fa fa-twitter"></i>
+                      </a>
+                      <a href="#pablo" class="btn btn-just-icon btn-link">
+                        <i class="fa fa-google-plus"></i>
+                      </a>
+                    </div>
+                  </div>
+                 
+                  <div class="card-body">
+                          <form [formGroup]="formModelobject" (ngSubmit)="onSubmit(formModelobject.value)">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <i class="material-icons">face</i>
+                        </span>
+                      </div>
+                      <input type="text" class="form-control" formControlName="username"  placeholder="Username...">
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <i class="material-icons">lock_outline</i>
+                        </span>
+                      </div>
+                      <input type="password" class="form-control" formControlName="password" placeholder="Password...">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="material-icons">lock_outline</i>
+                          </span>
+                        </div>
+                        <input type="password" class="form-control" formControlName="repassword" placeholder="Type Password Again...">
+                      </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="material-icons">face</i>
+                          </span>
+                        </div>
+                        <input type="text" class="form-control" formControlName="email"  placeholder="Email...">
+                      </div>
+                    <!-- <button  class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" type="submit" style="    top: 130px;
+                   right: 300px;"><i class="material-icon">Login</i></button> -->
+                   <button type="submit" class="btn btn-primary btn-round" style="
+                   top: 30px;
+               ">Register</button>
+                   </form>
+                  </div>
+                  <div class="footer text-center">
+                    <a [routerLink]="['/login']" class="btn btn-primary btn-link btn-wd btn-lg">already have an Account ! Login </a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p *ngIf="registerflag">
+            <ngb-alert type="success" (close)="close()" >Successfully Registered!</ngb-alert>
+          </p> 
+          <p *ngIf="errormessageFlagusername">
+              <ngb-alert type="danger" (close)="close()" >Username is already present please try using alphanumeric!</ngb-alert>
+            </p>
+          
+            <p *ngIf="errormessageFlaguseremail">
+                <ngb-alert type="danger" (close)="close()" >This email is already in use !</ngb-alert>
+              </p>
+              <p *ngIf="errorpasswordsnotsame">
+                  <ngb-alert type="danger" (close)="close()" >Both Typed passwords are not same !</ngb-alert>
+                </p>
+      </div>
+      

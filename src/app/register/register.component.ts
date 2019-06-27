@@ -11,7 +11,7 @@ interface Alert {
 export class RegisterRequest{
   constructor(private username,
   private password,
-  private email,
+  private email
   ){}
 
 }
@@ -24,7 +24,8 @@ export class RegisterComponent implements OnInit {
   registerflag=false;
   errormessageFlagusername=false;
   errormessageFlaguseremail=false;
-  ngOnInit(): void {
+  errorpasswordsnotsame=false;
+    ngOnInit(): void {
 
   }
   formModelobject;
@@ -34,12 +35,18 @@ export class RegisterComponent implements OnInit {
       this.formModelobject=this.form.group({
           username:'',
           password:'',
-          email:''
+          email:'',
+          repassword:''
       });
   }
 
   onSubmit(formmodeldata){
       console.log(formmodeldata.username+" "+formmodeldata.password +" "+formmodeldata.email);
+      if(formmodeldata.password != formmodeldata.repassword){
+          console.log("note same");
+          this.errorpasswordsnotsame=true;
+          return ;
+      }
       let obs= this.http.post("http://localhost:8080/register", new RegisterRequest(formmodeldata.username,formmodeldata.password,formmodeldata.email));
       obs.subscribe(data => {
           this.registerresponse=data;
@@ -63,5 +70,6 @@ export class RegisterComponent implements OnInit {
       this.registerflag=false;
       this.errormessageFlaguseremail=false;
       this.errormessageFlagusername=false;
+      this.errorpasswordsnotsame=false;
   }
 }

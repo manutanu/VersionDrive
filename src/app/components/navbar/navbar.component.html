@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top">
     <div class="container-fluid">
         <div class="navbar-wrapper">
-          <a class="navbar-brand" href="javascript:void(0)">{{getTitle()}}</a>
+          <a class="navbar-brand" >{{getTitle()}}</a>
+          <h4 style="padding-left: 400px;height: 10px;font-size: x-large;font-family: sans-serif;"><i class="material-icons">person</i>{{username}}</h4>
         </div>
         <button mat-raised-button class="navbar-toggler" type="button" (click)="sidebarToggle()">
             <span class="sr-only">Toggle navigation</span>
@@ -10,8 +11,12 @@
             <span class="navbar-toggler-icon icon-bar"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
+        
+            <button   class="btn btn-warning" style="
+            right: 80px;" (click)="logout()">Logout</button>
             <form class="navbar-form">
                 <div class="input-group no-border">
+                       
                     <input type="text" value="" class="form-control" placeholder="Search...">
                     <button mat-raised-button type="submit" class="btn btn-white btn-round btn-just-icon">
                         <i class="material-icons">search</i>

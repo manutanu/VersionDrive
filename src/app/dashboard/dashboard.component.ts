@@ -3,7 +3,7 @@ import { FileListService, FileObjectForTransfere } from '../file-list.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpEventType, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
@@ -51,7 +51,9 @@ export class DashboardComponent implements OnInit {
  
 
   constructor(private uploadService: UploadFileService, private filelistservice: FileListService,private sanitizer: DomSanitizer, private modalService: NgbModal, private form: FormBuilder, private router: Router, private http: HttpClient, private userservice: UserdetailsFetchService) {
-    this.allOfTheFetchingLogic();
+    if(sessionStorage.getItem('username')==='' || sessionStorage.getItem("token")==='')
+      this.router.navigate(['/login']);
+      this.allOfTheFetchingLogic();
   }
 
   allOfTheFetchingLogic(){
@@ -221,6 +223,10 @@ export class DashboardComponent implements OnInit {
     this.uploadService.pushFileVersionToStorage(this.currentFileUpload,this.fileListobject[i].fileid).subscribe(event => {
       if (event.type === HttpEventType.UploadProgress) {
         this.progress.percentage = Math.round(100 * event.loaded / event.total);
+        if(this.progress.percentage===100){
+          this.allOfTheFetchingLogic();
+        }
+        
       } else if (event instanceof HttpResponse) {
         console.log('File is completely uploaded!');
       }
@@ -264,8 +270,12 @@ uploadFile() {
       }
     } else if (event instanceof HttpResponse) {
       console.log('File is completely uploaded!');
+      this.allOfTheFetchingLogic();
     }
   });
+  if(this.progress.percentage=== 100){
+    this.allOfTheFetchingLogic();
+  }
   this.selectedFiles = undefined;
   this.progress.percentage=0;
 }
