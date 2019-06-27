@@ -1,0 +1,34 @@
+<div class="container">
+  <h2>Register</h2>
+    <div style="top:20px;" class="col-first" style="padding-top:10px">
+        <form [formGroup]="formModelobject" (ngSubmit)="onSubmit(formModelobject.value)">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="top:50px;">
+                  <input class="mdl-textfield__input" type="text" id="sample1" formControlName="username" autofocus>
+                  <label class="mdl-textfield__label" for="sample1">UserName</label>
+                </div>
+                <br />
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="top:80px;">
+                        <input class="mdl-textfield__input" type="password" id="sample1" formControlName="password" >
+                        <label class="mdl-textfield__label" for="sample1">password</label>
+                      </div>
+                      <br />
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="top:80px;">
+                              <input class="mdl-textfield__input" type="text" id="sample1" formControlName="email" >
+                              <label class="mdl-textfield__label" for="sample1">email</label>
+                            </div>
+    
+                <button  class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" type="submit" style="    top: 130px;
+                right: 300px;"><i class="material-icon">Register</i></button>
+        </form>
+    </div>
+    <a routerLink="/">Go To Login Page</a>
+    <p *ngIf="registerflag">
+        <ngb-alert type="success" (close)="close()" >Successfully Registered!</ngb-alert>
+      </p> 
+      <p *ngIf="errormessageFlagusername">
+          <ngb-alert type="danger" (close)="close()" >Username is already present please try using alphanumeric!</ngb-alert>
+        </p>
+      
+        <p *ngIf="errormessageFlaguseremail">
+            <ngb-alert type="danger" (close)="close()" >This email is already in use !</ngb-alert>
+          </p>

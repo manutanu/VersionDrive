@@ -1,5 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import * as Chartist from 'chartist';
+import { FileListService, FileObjectForTransfere } from '../file-list.service';
+import { DomSanitizer } from '@angular/platform-browser';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders, HttpEventType, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { UserdetailsFetchService } from '../userdetails-fetch.service';
+import { UploadFileService } from '../upload-file.service';
+
+
+interface Alert {
+  type: string;
+  message: string;
+}
+
+export class ShareRequestObject {
+  constructor(private toemail, private fromuserid, private permission, private fileid) { }
+}
+
+export class ResponseStatus{
+  private status;
+
+}
+
 
 @Component({
   selector: 'app-dashboard',
@@ -7,144 +32,246 @@ import * as Chartist from 'chartist';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-
-  constructor() { }
-  startAnimationForLineChart(chart){
-      let seq: any, delays: any, durations: any;
-      seq = 0;
-      delays = 80;
-      durations = 500;
-
-      chart.on('draw', function(data) {
-        if(data.type === 'line' || data.type === 'area') {
-          data.element.animate({
-            d: {
-              begin: 600,
-              dur: 700,
-              from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
-              to: data.path.clone().stringify(),
-              easing: Chartist.Svg.Easing.easeOutQuint
-            }
-          });
-        } else if(data.type === 'point') {
-              seq++;
-              data.element.animate({
-                opacity: {
-                  begin: seq * delays,
-                  dur: durations,
-                  from: 0,
-                  to: 1,
-                  easing: 'ease'
-                }
-              });
-          }
-      });
-
-      seq = 0;
-  };
-  startAnimationForBarChart(chart){
-      let seq2: any, delays2: any, durations2: any;
-
-      seq2 = 0;
-      delays2 = 80;
-      durations2 = 500;
-      chart.on('draw', function(data) {
-        if(data.type === 'bar'){
-            seq2++;
-            data.element.animate({
-              opacity: {
-                begin: seq2 * delays2,
-                dur: durations2,
-                from: 0,
-                to: 1,
-                easing: 'ease'
-              }
-            });
-        }
-      });
-
-      seq2 = 0;
-  };
-  ngOnInit() {
-      /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
-
-      const dataDailySalesChart: any = {
-          labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-          series: [
-              [12, 17, 7, 17, 23, 18, 38]
-          ]
-      };
-
-     const optionsDailySalesChart: any = {
-          lineSmooth: Chartist.Interpolation.cardinal({
-              tension: 0
-          }),
-          low: 0,
-          high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-          chartPadding: { top: 0, right: 0, bottom: 0, left: 0},
-      }
-
-      var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
-
-      this.startAnimationForLineChart(dailySalesChart);
+  closeResult: string;
+  userid = sessionStorage.getItem("userid");
+  fileListobject: FileObjectForTransfere[];
+  viewfileurls = [];
+  downloadfileurls = [];
+  fileids = [];
+  viewflag = [];
+  fileType: String[] = [];
+  private bodyText: string;
+  formModelobject;
+  useremails;
+  selectedFiles: FileList;
+  currentFileUpload: File;
+  progress: { percentage: number } = { percentage: 0 };
 
 
-      /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
+ 
 
-      const dataCompletedTasksChart: any = {
-          labels: ['12p', '3p', '6p', '9p', '12p', '3a', '6a', '9a'],
-          series: [
-              [230, 750, 450, 300, 280, 240, 200, 190]
-          ]
-      };
-
-     const optionsCompletedTasksChart: any = {
-          lineSmooth: Chartist.Interpolation.cardinal({
-              tension: 0
-          }),
-          low: 0,
-          high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-          chartPadding: { top: 0, right: 0, bottom: 0, left: 0}
-      }
-
-      var completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
-
-      // start animation for the Completed Tasks Chart - Line Chart
-      this.startAnimationForLineChart(completedTasksChart);
-
-
-
-      /* ----------==========     Emails Subscription Chart initialization    ==========---------- */
-
-      var datawebsiteViewsChart = {
-        labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-        series: [
-          [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
-
-        ]
-      };
-      var optionswebsiteViewsChart = {
-          axisX: {
-              showGrid: false
-          },
-          low: 0,
-          high: 1000,
-          chartPadding: { top: 0, right: 5, bottom: 0, left: 0}
-      };
-      var responsiveOptions: any[] = [
-        ['screen and (max-width: 640px)', {
-          seriesBarDistance: 5,
-          axisX: {
-            labelInterpolationFnc: function (value) {
-              return value[0];
-            }
-          }
-        }]
-      ];
-      var websiteViewsChart = new Chartist.Bar('#websiteViewsChart', datawebsiteViewsChart, optionswebsiteViewsChart, responsiveOptions);
-
-      //start animation for the Emails Subscription Chart
-      this.startAnimationForBarChart(websiteViewsChart);
+  constructor(private uploadService: UploadFileService, private filelistservice: FileListService,private sanitizer: DomSanitizer, private modalService: NgbModal, private form: FormBuilder, private router: Router, private http: HttpClient, private userservice: UserdetailsFetchService) {
+    this.allOfTheFetchingLogic();
   }
+
+  allOfTheFetchingLogic(){
+    // this.toDataURL('http://localhost:8080/viewdownload/view/5/22');
+    this.filelistservice.getListOfFiles().subscribe(data => {
+      this.fileListobject = data;
+      console.log(data);
+      //http://localhost:8080/viewdownload/view/{{userid}}/
+      for (let i = 0; i < this.fileListobject.length; i++) {
+        console.log("http://localhost:8080/viewdownload/view/" + this.userid + "/" + this.fileListobject[i].fileid);
+        this.viewfileurls.push("http://localhost:8080/viewdownload/view/" + this.userid + "/" + this.fileListobject[i].fileid);
+        this.downloadfileurls.push("http://localhost:8080/viewdownload/download/" + this.userid + "/" + this.fileListobject[i].fileid);
+        this.viewflag.push(false);
+        let name: String = this.fileListobject[i].filename;
+        this.fileids.push(this.fileListobject[i].fileid);
+        let type = name.substring((name.length - 3), name.length);
+        if (type === 'png' || type === 'jpg') {
+          this.fileType.push('image');
+          this.viewfileurls[i] = this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
+        } else if (type === 'mp3') {
+          this.fileType.push('audio');
+          this.viewfileurls[i] = this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
+        } else if (type === 'mkv' || type === 'mp4') {
+          this.fileType.push('video');
+          this.viewfileurls[i] = this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
+        } else if (type === 'pdf' || type === 'doc' || type==='txt') {
+          this.fileType.push('PDF');
+          this.viewfileurls[i] = this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
+        } else {
+          this.fileType.push('Other');
+          this.viewfileurls[i] = this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
+        }
+        //console.log((name.length-(name.length-3))+"  "+name+" "+name.length+"  "+type+" t "+this.fileType);
+      }
+    });
+
+    this.formModelobject = this.form.group({
+      useremail: '',
+      permission: ''
+    });
+  }
+
+  ngOnInit() {
+    this.userservice.getListOfUsers().subscribe(data => {
+      this.useremails = data;
+    });
+  }
+  view(index) {
+    this.viewflag[index] = !this.viewflag[index];
+  }
+
+  download(index) {
+    console.log(index);
+    window.open(this.downloadfileurls[index]);
+  }
+
+
+
+  open(content) {
+    this.progress.percentage=0;
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then((result) => {
+      this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    });
+  }
+
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      console.log(`with: ${reason}`);
+      return `with: ${reason}`;
+    }
+  }
+
+  shareformsubmissionflag=false ;
+  shareformsubmissionflagerro=false ;
+  shareformdatapermission;
+
+  setPermission(index){
+    if(index==='1'){
+      this.shareformdatapermission='READ';
+    }else if(index=== '2'){
+      this.shareformdatapermission='UPDATE';
+    }else if(index === '3'){
+      this.shareformdatapermission='DELETE';
+    }
+  }
+
+  submitFormForShare(shareformdata, index) {
+    console.log(shareformdata.useremail + " s " + index);
+    if(shareformdata.useremail===''){
+      window.alert("Please put a valid Email address");
+      return ;
+    }
+    debugger;
+    const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    return this.http.post<ResponseStatus>('http://localhost:8080/viewdownload/share/' + this.fileids[index], new ShareRequestObject(shareformdata.useremail, sessionStorage.getItem("userid"), this.shareformdatapermission, this.fileids[index]), { headers: header })
+      .subscribe(data => {
+        debugger;
+        console.log(data);
+        this.shareformsubmissionflag=true;
+      },
+        error => {
+          debugger;
+          console.log(error);
+          this.shareformsubmissionflagerro = true;
+        });
+  }
+
+  uploadVersion(index) {
+
+  }
+
+  closeerror(alert: Alert) {
+    this.shareformsubmissionflagerro = false;
+  }
+
+  closeSuccessfull(alert: Alert) {
+    this.shareformsubmissionflag = false;
+  }
+
+  public model: any;
+  public emailfromformdata: any;
+
+
+  // formatter = (result: string) => result.toUpperCase();
+
+  // search = (text$: Observable<string>) =>
+  //   text$.pipe(
+  //     debounceTime(200),
+  //     distinctUntilChanged(),
+  //     map(term => term === '' ? []
+  //       : this.useremails.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
+  //   )
+
+  //delete file 
+  firstarray;
+  secondarray;
+  delete(index) {
+    this.filelistservice.deletefile(this.fileListobject[index].fileid);
+    console.log("deleted Successfully");
+    this.firstarray = this.fileListobject.slice(0, index);
+    this.secondarray = this.fileListobject.slice(index + 1, this.fileListobject.length);
+    console.log(this.fileListobject + " ss " + this.firstarray + " ss " + this.secondarray);
+    this.fileListobject = [];
+    for (let i = 0; i < this.firstarray.length; i++) {
+      this.fileListobject.push(this.firstarray[i]);
+    }
+    for (let i = 0; i < this.secondarray.length; i++) {
+      this.fileListobject.push(this.secondarray[i]);
+    }
+  }
+
+  //for the purpose of version Upload
+  selectFile(event) {
+    this.selectedFiles = event.target.files;
+  }
+
+  upload(i) {
+    this.progress.percentage = 0;
+
+    this.currentFileUpload = this.selectedFiles.item(0);
+    this.uploadService.pushFileVersionToStorage(this.currentFileUpload,this.fileListobject[i].fileid).subscribe(event => {
+      if (event.type === HttpEventType.UploadProgress) {
+        this.progress.percentage = Math.round(100 * event.loaded / event.total);
+      } else if (event instanceof HttpResponse) {
+        console.log('File is completely uploaded!');
+      }
+    });
+
+    this.selectedFiles = undefined;
+  }
+
+
+
+//  toDataURL(url) {
+//   console.log('RESULT:');
+//   var xhr = new XMLHttpRequest();
+//   xhr.onload = function() {
+//     var reader = new FileReader();
+//     reader.onloadend = function() {
+//       console.log(reader.result);
+//     }
+//     reader.readAsDataURL(xhr.response);
+//   };
+//   xhr.open('GET', url);
+//   xhr.responseType = 'blob';
+//   xhr.send();
+// }
+
+
+selectFileUpload(event) {
+  this.selectedFiles = event.target.files;
+}
+
+uploadFile() {
+  this.progress.percentage = 0;
+
+  this.currentFileUpload = this.selectedFiles.item(0);
+  this.uploadService.pushFileToStorage(this.currentFileUpload).subscribe(event => {
+    if (event.type === HttpEventType.UploadProgress) {
+      this.progress.percentage = Math.round(100 * event.loaded / event.total);
+      console.log(this.progress.percentage);
+      if(this.progress.percentage=== 100){
+        this.allOfTheFetchingLogic();
+      }
+    } else if (event instanceof HttpResponse) {
+      console.log('File is completely uploaded!');
+    }
+  });
+  this.selectedFiles = undefined;
+  this.progress.percentage=0;
+}
+
+
+ 
+  
 
 }

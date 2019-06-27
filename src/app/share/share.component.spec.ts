@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TableListComponent } from './table-list.component';
+import { ShareComponent } from './share.component';
 
-describe('TableListComponent', () => {
-  let component: TableListComponent;
-  let fixture: ComponentFixture<TableListComponent>;
+describe('ShareComponent', () => {
+  let component: ShareComponent;
+  let fixture: ComponentFixture<ShareComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TableListComponent ]
+      declarations: [ ShareComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TableListComponent);
+    fixture = TestBed.createComponent(ShareComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
