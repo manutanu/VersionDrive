@@ -48,23 +48,16 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                           <button class="dropdown-item" (click)="download(i)" ngbDropdownItem>Download</button>
+                          <button class="dropdown-item" (click)="open(versionListdownload)" *ngIf="versionListOfEachFile.length > 0" ngbDropdownItem>Download Versions</button>
                               <button class="dropdown-item" (click)="open(content)" ngbDropdownItem>Preview</button>
-                              
-                              <!--start block of Preview of multiple versions -->
-                              <!-- <div class="col text-right" >
-                                <div ngbDropdown placement="top-right" class="d-inline-block" *ngIf="fileobject.versionList.length > 0">
-                                  <button class="dropdown-item" id="dropdownBasic2" ngbDropdownToggle>Preview Versions</button>
-                                  <div ngbDropdownMenu aria-labelledby="dropdownBasic2" *ngFor="let version of fileobject.versionList ; index as j">
-                                    <button (click)="open(version)" ngbDropdownItem>{{version.versionname}}</button>
-                                  </div>
-                                </div>
-                              </div> -->
-                              <!--end block of Preview of multiple versions -->
-            
+                              <button class="dropdown-item"  *ngIf="versionListOfEachFile.length > 0" (click)="open(versionList)" ngbDropdownItem>Preview Versions</button>
                               <button class="dropdown-item" (click)="open(intent)" ngbDropdownItem>Share</button>
+                              <button class="dropdown-item"  *ngIf="versionListOfEachFile.length > 0" ngbDropdownItem>Share Versions</button>
                               <button class="dropdown-item" (click)="open(whatintent)" ngbDropdownItem>Upload latest
                                 Version</button>
-                              <button class="dropdown-item" (click)="delete(i)" ngbDropdownItem>Remove</button>
+                              <button class="dropdown-item" (click)="delete(i)" *ngIf="versionListOfEachFile.length === 0" ngbDropdownItem>Remove</button>
+                              <button class="dropdown-item"  *ngIf="versionListOfEachFile.length > 0" ngbDropdownItem>Remove Versions</button>
+                              <!-- <button class="dropdown-item"  ngbDropdownItem>Shared Amongst</button> -->
                         </div>
                       </div>
                   </div>
@@ -73,7 +66,7 @@
 
               <!-- Modal for preview purpose -->
               <ng-template #content let-modal>
-                <!-- for Images -->
+               
                 <div class="modal-body" *ngIf='fileType[i] === "image"' style="width: 250%;
                 right: 400px;
                 padding: 0px;">
@@ -87,12 +80,9 @@
                 height: 100px;">
                   <iframe [src]="viewfileurls[i]" width="800px" height="800px" *ngIf='fileType[i] === "PDF"' style="    width: 100%; background-color:white
                     "></iframe>
-                  <!-- <embed [src]="viewfileurls[i]" width="800px" height="1100px"  *ngIf='viewflag[i] && fileType[i] === "PDF"' style="    width: 100%;
-                    "/> -->
                 </div>
       
-                <!-- Can be done using iframe -->
-                <!-- for Videos -->
+
                 <div class="modal-body" *ngIf='fileType[i] === "video"' style=" padding:0px;   width: 400%;
                     right: 500px;
                     height: 500px; ">
@@ -103,7 +93,7 @@
                   </video>
                 </div>
       
-                <!-- for audios -->
+                
                 <div class="modal-body" *ngIf='fileType[i] === "audio"'>
                   <audio *ngIf='fileType[i] === "audio"' style="    width: 100%;" controls>
                     <source [src]="viewfileurls[i]" type="audio/mpeg">
@@ -144,6 +134,15 @@
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
+                  
+
+                  <div *ngIf="alreadysharedflag" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    You have already shared this File To this User !
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="closealready()">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+
                 <div class="modal-footer">
                   <button type="button" class="btn btn-danger" (click)="modal.close('close')">Close</button>
                 </div>
@@ -173,6 +172,66 @@
           </div>
         </ng-template>
 
+        <!-- Modal For showing multiple versions of File to Preview  -->
+        <ng-template #versionList let-modal>
+          <div class="modal-body">
+              <ul  *ngFor="let vv of versionListOfEachFile ;index as j">
+                  <li class="mdl-list__item">
+                    <button class="btn btn-info" (click)="open(vieweveryversionfile)"><i class="material-icons">play_arrow</i> {{vv.versionname}}</button>
+                    <ng-template #vieweveryversionfile let-modal>
+               
+                        <div class="modal-body" *ngIf='fileType[i] === "image"' style="width: 250%;
+                        right: 400px;
+                        padding: 0px;">
+                          <img [src]="versionListOfEachFileViewUrls[j]" *ngIf='fileType[i] === "image"' style="    width: 100%;" />
+                        </div>
               
+                        <!-- for Pdfs -->
+                        <div class="modal-body" *ngIf='fileType[i] === "PDF"' style="    width: 200%;
+                        right: 200px;
+                        padding: 0px;
+                        height: 100px;">
+                          <iframe [src]="versionListOfEachFileViewUrls[j]" width="800px" height="800px" *ngIf='fileType[i] === "PDF"' style="    width: 100%; background-color:white
+                            "></iframe>
+                        </div>
+              
+        
+                        <div class="modal-body" *ngIf='fileType[i] === "video"' style=" padding:0px;   width: 400%;
+                            right: 500px;
+                            height: 500px; ">
+                          <video *ngIf='fileType[i] === "video"' style=" width: 75%;
+                            padding: 0px;" controls>
+                            <source [src]="versionListOfEachFileViewUrls[j]" type="video/mp4">
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+              
+                        
+                        <div class="modal-body" *ngIf='fileType[i] === "audio"'>
+                          <audio *ngIf='fileType[i] === "audio"' style="    width: 100%;" controls>
+                            <source [src]="versionListOfEachFileViewUrls[j]" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                          </audio>
+                        </div>
+                      </ng-template>
+
+                  </li>
+                  </ul>
+          </div>
+        </ng-template>
+        
+        <!-- Modal For showing multiple versions of File to Download  --> 
+        <ng-template #versionListdownload let-modal>
+            <div class="modal-body">
+                <ul class="demo-list-icon mdl-list" *ngFor="let vv of versionListOfEachFile ;index as j">
+                    <li class="mdl-list__item">
+                      <button class="btn btn-info" (click)="downloadVersion(j)"><i class="material-icons">cloud_download</i> {{vv.versionname}}</button>
+                    </li>
+                    </ul>
+            </div>
+          </ng-template>
+
+
+
           </div>
 </div>

@@ -35,6 +35,7 @@ export class ShareComponent implements OnInit {
   useremails;
 
   constructor(private fileservice:FileListService,sanitizer: DomSanitizer,private modalService: NgbModal,private form:FormBuilder,private router:Router,private http:HttpClient,private userservice:UserdetailsFetchService) { 
+    
     if(sessionStorage.getItem('username')==='' || sessionStorage.getItem("token")==='')
     this.router.navigate(['/login']);
     this.fileservice.getAllSharedFiles().subscribe(data=>{
@@ -63,6 +64,8 @@ export class ShareComponent implements OnInit {
           }
           //console.log((name.length-(name.length-3))+"  "+name+" "+name.length+"  "+type+" t "+this.fileType);
       }
+  },error =>{
+    this.router.navigate(['/login']);
   });
 
   }

@@ -1,116 +1,146 @@
-    <div class="main-content">
-      <div class="container-fluid">
-          <div class="row" >
-              <div class="col-lg-3 col-md-6 col-sm-6" *ngFor="let fileobject of fileListobject ; index as i ">
-                  <div class="card card-stats">
-                      <div class="card-header card-header-success card-header-icon">
-                          <div class="card-icon">
-                              <i class="material-icons">folder</i>
-                          </div>
-                          <h3 class="card-title">{{fileobject.filename}}</h3>
-                          <p class="card-category"> Shared By {{fileobject.owneremail}}</p>
-                      </div>
-                      <div class="card-footer">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              Actions
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                              <button class="dropdown-item" (click)="download(i)" ngbDropdownItem>Download</button>
-                                  <button class="dropdown-item" (click)="open(content)" ngbDropdownItem>Preview</button>
-                                  
-                                  <!--start block of Preview of multiple versions -->
-                                  <!-- <div class="col text-right" >
-                                    <div ngbDropdown placement="top-right" class="d-inline-block" *ngIf="fileobject.versionList.length > 0>
-                                      <button class="dropdown-item" id="dropdownBasic2" ngbDropdownToggle>Preview Versions</button>
-                                      <div ngbDropdownMenu aria-labelledby="dropdownBasic2" *ngFor="let version of fileobject.versionList ; index as j">
-                                        <button (click)="open(version)" ngbDropdownItem>{{version.versionname}}</button>
-                                      </div>
-                                    </div>
-                                  </div> -->
-                                  <!--end block of Preview of multiple versions -->
-                
-                                  <!-- <button class="dropdown-item" (click)="open(intent)" ngbDropdownItem>Share</button> -->
-                                  <button class="dropdown-item" (click)="open(whatintent)" ngbDropdownItem>Upload latest
-                                    Version</button>
-                                  <button class="dropdown-item" (click)="delete(i)" [disabled]="fileobject.permission==='UPDATE'" ngbDropdownItem>Remove</button>
-                            </div>
-                          </div>
-                      </div>
-                  </div>
-    
-    
-                  <!-- Modal for preview purpose -->
-                  <ng-template #content let-modal>
-                    <!-- for Images -->
-                    <div class="modal-body" *ngIf='fileType[i] === "image"' style="width: 250%;
+<div class="main-content">
+  <div class="container-fluid">
+      <h3 style="
+      font-weight: 600;
+  ">People Shared These Files To you </h3>
+    <div class="row">
+      <div class="col-lg-3 col-md-6 col-sm-6" *ngFor="let fileobject of fileListobject ; index as i ">
+        <div class="card card-stats">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">folder</i>
+            </div>
+            <h3 class="card-title">{{fileobject.filename}}</h3>
+            <p class="card-category"> Shared By {{fileobject.owneremail}}</p>
+          </div>
+          <div class="card-footer">
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Actions
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <button class="dropdown-item" (click)="download(i)" ngbDropdownItem>Download</button>
+                <button class="dropdown-item" (click)="open(content)" ngbDropdownItem>Preview</button>
+
+                <!-- <button class="dropdown-item" (click)="open(intent)" ngbDropdownItem>Share</button> -->
+                <button class="dropdown-item" (click)="open(whatintent)" ngbDropdownItem>Upload latest
+                  Version</button>
+                <button class="dropdown-item" (click)="delete(i)" [disabled]="fileobject.permission==='UPDATE'"
+                  ngbDropdownItem>Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Modal for preview purpose -->
+        <ng-template #content let-modal>
+          <!-- for Images -->
+          <div class="modal-body" *ngIf='fileType[i] === "image"' style="width: 250%;
                     right: 400px;
                     padding: 0px;">
-                      <img [src]="viewfileurls[i]" *ngIf='fileType[i] === "image"' style="    width: 100%;" />
-                    </div>
-          
-                    <!-- for Pdfs -->
-                    <div class="modal-body" *ngIf='fileType[i] === "PDF"' style="    width: 200%;
+            <img [src]="viewfileurls[i]" *ngIf='fileType[i] === "image"' style="    width: 100%;" />
+          </div>
+
+          <!-- for Pdfs -->
+          <div class="modal-body" *ngIf='fileType[i] === "PDF"' style="    width: 200%;
                     right: 200px;
                     padding: 0px;
                     height: 100px;">
-                      <iframe [src]="viewfileurls[i]" width="800px" height="800px" *ngIf='fileType[i] === "PDF"' style="    width: 100%;
+            <iframe [src]="viewfileurls[i]" width="800px" height="800px" *ngIf='fileType[i] === "PDF"' style="    width: 100%;
                         "></iframe>
-                      <!-- <embed [src]="viewfileurls[i]" width="800px" height="1100px"  *ngIf='viewflag[i] && fileType[i] === "PDF"'/> -->
-                    </div>
-          
-                    <!-- Can be done using iframe -->
-                    <!-- for Videos -->
-                    <div class="modal-body" *ngIf='fileType[i] === "video"' style=" padding:0px;   width: 400%;
+            <!-- <embed [src]="viewfileurls[i]" width="800px" height="1100px"  *ngIf='viewflag[i] && fileType[i] === "PDF"'/> -->
+          </div>
+
+          <!-- Can be done using iframe -->
+          <!-- for Videos -->
+          <div class="modal-body" *ngIf='fileType[i] === "video"' style=" padding:0px;   width: 400%;
                         right: 500px;
                         height: 500px; ">
-                      <video *ngIf='fileType[i] === "video"' style=" width: 75%;
+            <video *ngIf='fileType[i] === "video"' style=" width: 75%;
                         padding: 0px;" controls>
-                        <source [src]="viewfileurls[i]" type="video/mp4">
-                        Your browser does not support the video tag.
-                      </video>
-                    </div>
-          
-                    <!-- for audios -->
-                    <div class="modal-body" *ngIf='fileType[i] === "audio"'>
-                      <audio *ngIf='fileType[i] === "audio"' style="    width: 100%;" controls>
-                        <source [src]="viewfileurls[i]" type="audio/mpeg">
-                        Your browser does not support the audio element.
-                      </audio>
-                    </div>
-                  </ng-template>
-    
-    
-    
-                   <!-- Modal for Version Upload -->
-    
-            <ng-template #whatintent let-modal>
-              <div class="modal-body">
-                <div *ngIf="currentFileUpload" class="progress" style="height: 30px">
-                  <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
-                    attr.aria-valuenow="{{progress.percentage}}" aria-valuemin="0" aria-valuemax="100"
-                    [ngStyle]="{width:progress.percentage+'%'}">
-                    {{progress.percentage}}%</div>
-                </div>
-    
-                <label class="btn btn-default">
-                  <input type="file" (change)="selectFile($event)">
-                </label>
-                <button class="btn btn-success" [disabled]="!selectedFiles" (click)="upload(i)">Upload</button>
-              </div>
-    
-              <!-- <p *ngIf="shareformsubmissionflag">
+              <source [src]="viewfileurls[i]" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+
+          <!-- for audios -->
+          <div class="modal-body" *ngIf='fileType[i] === "audio"'>
+            <audio *ngIf='fileType[i] === "audio"' style="    width: 100%;" controls>
+              <source [src]="viewfileurls[i]" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+        </ng-template>
+
+
+
+        <!-- Modal for Version Upload -->
+
+        <ng-template #whatintent let-modal>
+          <div class="modal-body">
+            <div *ngIf="currentFileUpload" class="progress" style="height: 30px">
+              <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
+                attr.aria-valuenow="{{progress.percentage}}" aria-valuemin="0" aria-valuemax="100"
+                [ngStyle]="{width:progress.percentage+'%'}">
+                {{progress.percentage}}%</div>
+            </div>
+
+            <label class="btn btn-default">
+              <input type="file" (change)="selectFile($event)">
+            </label>
+            <button class="btn btn-success" [disabled]="!selectedFiles" (click)="upload(i)">Upload</button>
+          </div>
+
+          <!-- <p *ngIf="shareformsubmissionflag">
                 <ngb-alert type="success" (close)="close()">Successfully shared File Please close Popup!</ngb-alert>
               </p>
               <p *ngIf="shareformsubmissionflagerro">
                 <ngb-alert type="danger" (close)="close()">Cant be Shared Right Now !</ngb-alert>
               </p> -->
-              <div class="modal-footer">
-                <button type="button" class="btn btn-outline-dark" (click)="modal.close('close')">Close</button>
-              </div>
-            </ng-template>
-    
-                  
-              </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-dark" (click)="modal.close('close')">Close</button>
+          </div>
+        </ng-template>
+
+
+      </div>
     </div>
-    
+
+
+<!-- 
+    <h3 style="
+      font-weight: 600;
+  ">You Shared These Files To Others </h3>
+    <div class="row">
+      <div class="col-lg-3 col-md-6 col-sm-6" *ngFor="let fileobject of fileListobject ; index as i ">
+        <div class="card card-stats">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">folder</i>
+            </div>
+            <h3 class="card-title">{{fileobject.filename}}</h3>
+            <p class="card-category"> Shared By {{fileobject.owneremail}}</p>
+          </div>
+          <div class="card-footer">
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Actions
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <button class="dropdown-item" (click)="download(i)" ngbDropdownItem>Download</button>
+                <button class="dropdown-item" (click)="open(content)" ngbDropdownItem>Preview</button>
+                <button class="dropdown-item" (click)="open(whatintent)" ngbDropdownItem>Upload latest
+                  Version</button>
+                <button class="dropdown-item" (click)="delete(i)" [disabled]="fileobject.permission==='UPDATE'"
+                  ngbDropdownItem>Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div> -->
+
+  </div>
+</div>

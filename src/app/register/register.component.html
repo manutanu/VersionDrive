@@ -126,18 +126,26 @@
             </div>
           </div>
         </div>
-        <p *ngIf="registerflag">
-            <ngb-alert type="success" (close)="close()" >Successfully Registered!</ngb-alert>
+        <p *ngIf="registerflag" >
+            <ngb-alert type="success" (close)="close()" style="width: 20%;
+            left: 680px;
+            top: 80px;">Successfully Registered!</ngb-alert>
           </p> 
-          <p *ngIf="errormessageFlagusername">
-              <ngb-alert type="danger" (close)="close()" >Username is already present please try using alphanumeric!</ngb-alert>
+          <p *ngIf="errormessageFlagusername" >
+              <ngb-alert type="danger" (close)="close()" style="width: 20%;
+              left: 680px;
+              top: 80px;">Username is already present please try using alphanumeric!</ngb-alert>
             </p>
           
-            <p *ngIf="errormessageFlaguseremail">
-                <ngb-alert type="danger" (close)="close()" >This email is already in use !</ngb-alert>
+            <p *ngIf="errormessageFlaguseremail" >
+                <ngb-alert type="danger" (close)="close()" style="width: 20%;
+                left: 680px;
+                top: 80px;">This email is already in use !</ngb-alert>
               </p>
-              <p *ngIf="errorpasswordsnotsame">
-                  <ngb-alert type="danger" (close)="close()" >Both Typed passwords are not same !</ngb-alert>
+              <p *ngIf="errorpasswordsnotsame" >
+                  <ngb-alert type="danger" (close)="close()" style="width: 20%;
+                  left: 680px;
+                  top: 80px;">Both Typed passwords are not same !</ngb-alert>
                 </p>
       </div>
       

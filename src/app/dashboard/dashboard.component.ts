@@ -21,7 +21,7 @@ export class ShareRequestObject {
 }
 
 export class ResponseStatus{
-  private status;
+  constructor(public status){}
 
 }
 
@@ -35,6 +35,10 @@ export class DashboardComponent implements OnInit {
   closeResult: string;
   userid = sessionStorage.getItem("userid");
   fileListobject: FileObjectForTransfere[];
+  shareListOfEachFile=[];
+  versionListOfEachFile=[];
+  versionListOfEachFileViewUrls=[];
+  versionListOfEachFileDownloadUrls=[];
   viewfileurls = [];
   downloadfileurls = [];
   fileids = [];
@@ -69,6 +73,15 @@ export class DashboardComponent implements OnInit {
         this.viewflag.push(false);
         let name: String = this.fileListobject[i].filename;
         this.fileids.push(this.fileListobject[i].fileid);
+        this.shareListOfEachFile=this.fileListobject[i].shareList;
+        this.versionListOfEachFile=this.fileListobject[i].versionList;
+
+        //for the purpose of versionlist view and downloads of versions
+        for(let j=0;j<this.versionListOfEachFile.length;j++){
+            this.versionListOfEachFileViewUrls.push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[j].versionname);
+            this.versionListOfEachFileDownloadUrls.push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[j].versionname);
+        }
+        
         let type = name.substring((name.length - 3), name.length);
         if (type === 'png' || type === 'jpg') {
           this.fileType.push('image');
@@ -88,6 +101,8 @@ export class DashboardComponent implements OnInit {
         }
         //console.log((name.length-(name.length-3))+"  "+name+" "+name.length+"  "+type+" t "+this.fileType);
       }
+    },error =>{
+      this.router.navigate(['/login']);
     });
 
     this.formModelobject = this.form.group({
@@ -146,6 +161,8 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  rs:ResponseStatus;
+  alreadysharedflag=false;
   submitFormForShare(shareformdata, index) {
     console.log(shareformdata.useremail + " s " + index);
     if(shareformdata.useremail===''){
@@ -157,8 +174,14 @@ export class DashboardComponent implements OnInit {
     return this.http.post<ResponseStatus>('http://localhost:8080/viewdownload/share/' + this.fileids[index], new ShareRequestObject(shareformdata.useremail, sessionStorage.getItem("userid"), this.shareformdatapermission, this.fileids[index]), { headers: header })
       .subscribe(data => {
         debugger;
-        console.log(data);
+        console.log(data.status);
+        if(data.status==='Already'){
+          this.alreadysharedflag=true;
+        }else if(data.status==='SUCCESS'){
         this.shareformsubmissionflag=true;
+        }else if(data.status==='ERROR'){
+          this.shareformsubmissionflagerro = true;
+        }
       },
         error => {
           debugger;
@@ -169,6 +192,10 @@ export class DashboardComponent implements OnInit {
 
   uploadVersion(index) {
 
+  }
+
+  closealready(alert: Alert) {
+    this.alreadysharedflag = false;
   }
 
   closeerror(alert: Alert) {
@@ -281,7 +308,10 @@ uploadFile() {
 }
 
 
- 
-  
+//for downloading versions of file
+downloadVersion(j){
+  window.open(this.versionListOfEachFileDownloadUrls[j]);
+}
+
 
 }
