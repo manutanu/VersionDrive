@@ -20,8 +20,8 @@ export class ShareRequestObject {
   constructor(private toemail, private fromuserid, private permission, private fileid) { }
 }
 
-export class ResponseStatus{
-  constructor(public status){}
+export class ResponseStatus {
+  constructor(public status) { }
 
 }
 
@@ -35,10 +35,10 @@ export class DashboardComponent implements OnInit {
   closeResult: string;
   userid = sessionStorage.getItem("userid");
   fileListobject: FileObjectForTransfere[];
-  shareListOfEachFile=[];
-  versionListOfEachFile=[];
-  versionListOfEachFileViewUrls=[];
-  versionListOfEachFileDownloadUrls=[];
+  shareListOfEachFile = [];
+  versionListOfEachFile = [];
+  versionListOfEachFileViewUrls: string[][] = [];
+  versionListOfEachFileDownloadUrls: string[][] = [];
   viewfileurls = [];
   downloadfileurls = [];
   fileids = [];
@@ -52,15 +52,15 @@ export class DashboardComponent implements OnInit {
   progress: { percentage: number } = { percentage: 0 };
 
 
- 
 
-  constructor(private uploadService: UploadFileService, private filelistservice: FileListService,private sanitizer: DomSanitizer, private modalService: NgbModal, private form: FormBuilder, private router: Router, private http: HttpClient, private userservice: UserdetailsFetchService) {
-    if(sessionStorage.getItem('username')==='' || sessionStorage.getItem("token")==='')
+
+  constructor(private uploadService: UploadFileService, private filelistservice: FileListService, private sanitizer: DomSanitizer, private modalService: NgbModal, private form: FormBuilder, private router: Router, private http: HttpClient, private userservice: UserdetailsFetchService) {
+    if (sessionStorage.getItem('username') === '' || sessionStorage.getItem("token") === '')
       this.router.navigate(['/login']);
-      this.allOfTheFetchingLogic();
+    this.allOfTheFetchingLogic();
   }
 
-  allOfTheFetchingLogic(){
+  allOfTheFetchingLogic() {
     // this.toDataURL('http://localhost:8080/viewdownload/view/5/22');
     this.filelistservice.getListOfFiles().subscribe(data => {
       this.fileListobject = data;
@@ -73,15 +73,20 @@ export class DashboardComponent implements OnInit {
         this.viewflag.push(false);
         let name: String = this.fileListobject[i].filename;
         this.fileids.push(this.fileListobject[i].fileid);
-        this.shareListOfEachFile=this.fileListobject[i].shareList;
-        this.versionListOfEachFile=this.fileListobject[i].versionList;
-
+        this.shareListOfEachFile = this.fileListobject[i].shareList;
+        this.versionListOfEachFile.push(this.fileListobject[i].versionList);
+        this.versionListOfEachFileViewUrls[i] = [];
+        this.versionListOfEachFileDownloadUrls[i] = [];
         //for the purpose of versionlist view and downloads of versions
-        for(let j=0;j<this.versionListOfEachFile.length;j++){
-            this.versionListOfEachFileViewUrls.push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[j].versionname);
-            this.versionListOfEachFileDownloadUrls.push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[j].versionname);
+        for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
+          console.log(this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
+          this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
+          console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
         }
-        
+
+
+
         let type = name.substring((name.length - 3), name.length);
         if (type === 'png' || type === 'jpg') {
           this.fileType.push('image');
@@ -92,7 +97,7 @@ export class DashboardComponent implements OnInit {
         } else if (type === 'mkv' || type === 'mp4') {
           this.fileType.push('video');
           this.viewfileurls[i] = this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
-        } else if (type === 'pdf' || type === 'doc' || type==='txt') {
+        } else if (type === 'pdf' || type === 'doc' || type === 'txt') {
           this.fileType.push('PDF');
           this.viewfileurls[i] = this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
         } else {
@@ -101,7 +106,7 @@ export class DashboardComponent implements OnInit {
         }
         //console.log((name.length-(name.length-3))+"  "+name+" "+name.length+"  "+type+" t "+this.fileType);
       }
-    },error =>{
+    }, error => {
       this.router.navigate(['/login']);
     });
 
@@ -128,7 +133,7 @@ export class DashboardComponent implements OnInit {
 
 
   open(content) {
-    this.progress.percentage=0;
+    this.progress.percentage = 0;
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
@@ -147,27 +152,27 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  shareformsubmissionflag=false ;
-  shareformsubmissionflagerro=false ;
+  shareformsubmissionflag = false;
+  shareformsubmissionflagerro = false;
   shareformdatapermission;
 
-  setPermission(index){
-    if(index==='1'){
-      this.shareformdatapermission='READ';
-    }else if(index=== '2'){
-      this.shareformdatapermission='UPDATE';
-    }else if(index === '3'){
-      this.shareformdatapermission='DELETE';
+  setPermission(index) {
+    if (index === '1') {
+      this.shareformdatapermission = 'READ';
+    } else if (index === '2') {
+      this.shareformdatapermission = 'UPDATE';
+    } else if (index === '3') {
+      this.shareformdatapermission = 'DELETE';
     }
   }
 
-  rs:ResponseStatus;
-  alreadysharedflag=false;
+  rs: ResponseStatus;
+  alreadysharedflag = false;
   submitFormForShare(shareformdata, index) {
     console.log(shareformdata.useremail + " s " + index);
-    if(shareformdata.useremail===''){
+    if (shareformdata.useremail === '') {
       window.alert("Please put a valid Email address");
-      return ;
+      return;
     }
     debugger;
     const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
@@ -175,11 +180,11 @@ export class DashboardComponent implements OnInit {
       .subscribe(data => {
         debugger;
         console.log(data.status);
-        if(data.status==='Already'){
-          this.alreadysharedflag=true;
-        }else if(data.status==='SUCCESS'){
-        this.shareformsubmissionflag=true;
-        }else if(data.status==='ERROR'){
+        if (data.status === 'Already') {
+          this.alreadysharedflag = true;
+        } else if (data.status === 'SUCCESS') {
+          this.shareformsubmissionflag = true;
+        } else if (data.status === 'ERROR') {
           this.shareformsubmissionflagerro = true;
         }
       },
@@ -247,71 +252,78 @@ export class DashboardComponent implements OnInit {
     this.progress.percentage = 0;
 
     this.currentFileUpload = this.selectedFiles.item(0);
-    this.uploadService.pushFileVersionToStorage(this.currentFileUpload,this.fileListobject[i].fileid).subscribe(event => {
+    this.uploadService.pushFileVersionToStorage(this.currentFileUpload, this.fileListobject[i].fileid).subscribe(event => {
       if (event.type === HttpEventType.UploadProgress) {
         this.progress.percentage = Math.round(100 * event.loaded / event.total);
-        if(this.progress.percentage===100){
-          this.allOfTheFetchingLogic();
+        if (this.progress.percentage === 100) {
+          debugger;
+          //this.allOfTheFetchingLogic();
         }
-        
+
       } else if (event instanceof HttpResponse) {
         console.log('File is completely uploaded!');
+        debugger;
+        //this.allOfTheFetchingLogic();
       }
     });
-
-    this.selectedFiles = undefined;
-  }
-
-
-
-//  toDataURL(url) {
-//   console.log('RESULT:');
-//   var xhr = new XMLHttpRequest();
-//   xhr.onload = function() {
-//     var reader = new FileReader();
-//     reader.onloadend = function() {
-//       console.log(reader.result);
-//     }
-//     reader.readAsDataURL(xhr.response);
-//   };
-//   xhr.open('GET', url);
-//   xhr.responseType = 'blob';
-//   xhr.send();
-// }
-
-
-selectFileUpload(event) {
-  this.selectedFiles = event.target.files;
-}
-
-uploadFile() {
-  this.progress.percentage = 0;
-
-  this.currentFileUpload = this.selectedFiles.item(0);
-  this.uploadService.pushFileToStorage(this.currentFileUpload).subscribe(event => {
-    if (event.type === HttpEventType.UploadProgress) {
-      this.progress.percentage = Math.round(100 * event.loaded / event.total);
-      console.log(this.progress.percentage);
-      if(this.progress.percentage=== 100){
-        this.allOfTheFetchingLogic();
-      }
-    } else if (event instanceof HttpResponse) {
-      console.log('File is completely uploaded!');
+    if (this.progress.percentage === 100) {
+      debugger;
       this.allOfTheFetchingLogic();
     }
-  });
-  if(this.progress.percentage=== 100){
-    this.allOfTheFetchingLogic();
+    this.selectedFiles = undefined;
+    this.progress.percentage = 0;
   }
-  this.selectedFiles = undefined;
-  this.progress.percentage=0;
-}
 
 
-//for downloading versions of file
-downloadVersion(j){
-  window.open(this.versionListOfEachFileDownloadUrls[j]);
-}
+
+  //  toDataURL(url) {
+  //   console.log('RESULT:');
+  //   var xhr = new XMLHttpRequest();
+  //   xhr.onload = function() {
+  //     var reader = new FileReader();
+  //     reader.onloadend = function() {
+  //       console.log(reader.result);
+  //     }
+  //     reader.readAsDataURL(xhr.response);
+  //   };
+  //   xhr.open('GET', url);
+  //   xhr.responseType = 'blob';
+  //   xhr.send();
+  // }
+
+
+  selectFileUpload(event) {
+    this.selectedFiles = event.target.files;
+  }
+
+  uploadFile() {
+    this.progress.percentage = 0;
+
+    this.currentFileUpload = this.selectedFiles.item(0);
+    this.uploadService.pushFileToStorage(this.currentFileUpload).subscribe(event => {
+      if (event.type === HttpEventType.UploadProgress) {
+        this.progress.percentage = Math.round(100 * event.loaded / event.total);
+        console.log(this.progress.percentage);
+        if (this.progress.percentage === 100) {
+          this.allOfTheFetchingLogic();
+        }
+      } else if (event instanceof HttpResponse) {
+        console.log('File is completely uploaded!');
+        this.allOfTheFetchingLogic();
+      }
+    });
+    if (this.progress.percentage === 100) {
+      this.allOfTheFetchingLogic();
+    }
+    this.selectedFiles = undefined;
+    this.progress.percentage = 0;
+  }
+
+
+  //for downloading versions of file
+  downloadVersion(i, j) {
+    window.open(this.versionListOfEachFileDownloadUrls[i][j]);
+  }
 
 
 }

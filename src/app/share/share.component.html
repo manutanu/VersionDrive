@@ -20,13 +20,13 @@
                 Actions
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <button class="dropdown-item" (click)="download(i)" ngbDropdownItem>Download</button>
+                <button class="dropdown-item" (click)="download(i)" [disabled]="fileobject.permission==='READ'" ngbDropdownItem>Download</button>
                 <button class="dropdown-item" (click)="open(content)" ngbDropdownItem>Preview</button>
 
                 <!-- <button class="dropdown-item" (click)="open(intent)" ngbDropdownItem>Share</button> -->
-                <button class="dropdown-item" (click)="open(whatintent)" ngbDropdownItem>Upload latest
+                <button class="dropdown-item" (click)="open(whatintent)" [disabled]="fileobject.permission==='DELETE' || fileobject.permission==='READ'" ngbDropdownItem>Upload latest
                   Version</button>
-                <button class="dropdown-item" (click)="delete(i)" [disabled]="fileobject.permission==='UPDATE'"
+                <button class="dropdown-item" (click)="delete(i)" [disabled]="fileobject.permission==='UPDATE' || fileobject.permission==='READ'"
                   ngbDropdownItem>Remove</button>
               </div>
             </div>
