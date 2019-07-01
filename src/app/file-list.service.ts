@@ -29,6 +29,7 @@ export class FileObjectForShared {
   public ownername;
   public owneremail;
   public permission;
+  public listOfVersionsOfSharedFiles;
 
 
 }

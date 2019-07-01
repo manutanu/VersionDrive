@@ -55,8 +55,8 @@
                 <button class="dropdown-item" *ngIf="fileobject.versionList.length > 0" (click)="open(versionList)"
                   ngbDropdownItem>Preview Versions</button>
                 <button class="dropdown-item" (click)="open(intent)" ngbDropdownItem>Share</button>
-                <button class="dropdown-item" *ngIf="fileobject.versionList.length > 0" ngbDropdownItem>Share
-                  Versions</button>
+                <!-- <button class="dropdown-item" *ngIf="fileobject.versionList.length > 0" (click)="open(versionListForSharing)" ngbDropdownItem>Share
+                  Versions</button> -->
                 <button class="dropdown-item" (click)="open(whatintent)" ngbDropdownItem>Upload latest
                   Version</button>
                 <button class="dropdown-item" (click)="delete(i)" *ngIf="fileobject.versionList.length === 0"
@@ -109,6 +109,7 @@
         </ng-template>
 
 
+        <!-- Modal for showing form for sharing file to other users -->
         <ng-template #intent let-modal>
           <div class="modal-body">
             <form [formGroup]="formModelobject" (ngSubmit)="submitFormForShare(formModelobject.value,i)">
@@ -229,6 +230,7 @@
           </div>
         </ng-template>
 
+
         <!-- Modal For showing multiple versions of File to Download  -->
         <ng-template #versionListdownload let-modal>
           <div class="modal-body">
@@ -241,7 +243,64 @@
           </div>
         </ng-template>
 
+        <!-- Modal for showing multiple versions for sharing to other users -->
+        <ng-template #versionListForSharing let-modal>
+          <div class="modal-body">
+            <ul class="demo-list-icon mdl-list" *ngFor="let vv of versionListOfEachFile[i] ;index as j">
+              <li class="mdl-list__item">
+                <button class="btn btn-info" (click)="openForShare(fileSharingVersionintent,vv.versionid)"><i class="material-icons">share</i>
+                  {{vv.versionname}}</button>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
 
+
+        <!-- Modal for showing form for sharing file Versions to other users -->
+        <ng-template #fileSharingVersionintent let-modal>
+          <div class="modal-body">
+            <form [formGroup]="formModelobject" (ngSubmit)="submitFormForShareVersion(formModelobject.value)">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="top:50px;">
+                <label for="typeahead-format">User Email</label>
+                <input id="typeahead-format" type="text" class="form-control" formControlName="useremail" />
+              </div>
+              <br />
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="top:80px;">
+
+                <label> Permissions </label><br>
+                <button class="btn btn-primary btn-sm" (click)="setPermission('1')">READ</button>
+                <button class="btn btn-primary btn-sm" (click)="setPermission('2')">UPDATE</button>
+                <button class="btn btn-primary btn-sm" (click)="setPermission('3')">DELETE</button>
+              </div>
+
+              <!-- <button class="btn btn-success" type="submit" ><i class="material-icons">share</i></button> -->
+            </form>
+          </div>
+          <div *ngIf="shareformsubmissionflag" class="alert alert-success alert-dismissible fade show" role="alert">
+            Successfully shared File Please close Popup!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="closeSuccessfull()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div *ngIf="shareformsubmissionflagerro" class="alert alert-danger alert-dismissible fade show" role="alert">
+            Cant be Shared Right Now !
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="closeerror()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+
+          <div *ngIf="alreadysharedflag" class="alert alert-danger alert-dismissible fade show" role="alert">
+            You have already shared this File To this User !
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="closealready()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" (click)="modal.close('close')">Close</button>
+          </div>
+        </ng-template>
 
       </div>
     </div>

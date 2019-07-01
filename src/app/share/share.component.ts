@@ -34,10 +34,22 @@ export class ShareComponent implements OnInit {
   formModelobject;
   useremails;
 
-  constructor(private fileservice:FileListService,sanitizer: DomSanitizer,private modalService: NgbModal,private form:FormBuilder,private router:Router,private http:HttpClient,private userservice:UserdetailsFetchService) { 
+  //for the purpose of different versions of a file 
+  versionListOfEachFile = [];
+  versionListOfEachFileViewUrls: string[][] = [];
+  versionListOfEachFileDownloadUrls: string[][] = [];
+
+  constructor(private fileservice:FileListService,private sanitizer: DomSanitizer,private modalService: NgbModal,private form:FormBuilder,private router:Router,private http:HttpClient,private userservice:UserdetailsFetchService) { 
     
     if(sessionStorage.getItem('username')==='' || sessionStorage.getItem("token")==='')
     this.router.navigate(['/login']);
+    
+    this.allFetchLogic();
+
+  }
+
+  allFetchLogic(){
+    
     this.fileservice.getAllSharedFiles().subscribe(data=>{
       this.fileListobject=data;
       //http://localhost:8080/viewdownload/view/{{userid}}/
@@ -48,36 +60,51 @@ export class ShareComponent implements OnInit {
           this.viewflag.push(false);
           let name:String=this.fileListobject[i].filename;
           this.fileids.push(this.fileListobject[i].fileid);
+
+          this.versionListOfEachFile.push(this.fileListobject[i].listOfVersionsOfSharedFiles);
+        this.versionListOfEachFileViewUrls[i] = [];
+        this.versionListOfEachFileDownloadUrls[i] = [];
+        //for the purpose of versionlist view and downloads of versions
+        for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
+          console.log(this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname + "");
+          this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
+          console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
+        }
+
+
           let type=name.substring((name.length-3),name.length);
           if(type === 'png' || type==='jpg'){
               this.fileType.push('image');
-              this.viewfileurls[i]=sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
+              this.viewfileurls[i]=this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
           }else if(type === 'mp3'){
               this.fileType.push('audio');
-              this.viewfileurls[i]=sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
+              this.viewfileurls[i]=this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
           }else if(type === 'mkv' || type===  'mp4'){
               this.fileType.push('video');
-              this.viewfileurls[i]=sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
+              this.viewfileurls[i]=this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
           }else if(type === 'pdf' || type === 'doc'){
             this.fileType.push('PDF');
-            this.viewfileurls[i]=sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
+            this.viewfileurls[i]=this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
           }
           //console.log((name.length-(name.length-3))+"  "+name+" "+name.length+"  "+type+" t "+this.fileType);
       }
   },error =>{
     this.router.navigate(['/login']);
   });
-
   }
+
 
   ngOnInit() {
     this.userservice.getListOfUsers().subscribe(data => {
       this.useremails = data;
     });
   }
+
+
   view(index){
     this.viewflag[index]=!this.viewflag[index];
-}
+  }
 
 download(index){
   window.open(this.downloadfileurls[index]);
@@ -117,6 +144,7 @@ submitFormForShare(shareformdata,index){
      });
 }
 
+//dont know why i made this method
 uploadVersion(index){
 
 }
@@ -158,6 +186,11 @@ delete(index){
         for(let i=0;i<this.secondarray.length;i++){
             this.fileListobject.push(this.secondarray[i]);
         }
+}
+
+
+downloadVersion(i, j) {
+  window.open(this.versionListOfEachFileDownloadUrls[i][j]);
 }
 
 }

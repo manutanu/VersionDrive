@@ -21,7 +21,11 @@
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <button class="dropdown-item" (click)="download(i)" [disabled]="fileobject.permission==='READ'" ngbDropdownItem>Download</button>
+                <button class="dropdown-item" (click)="open(versionListdownload)"
+                  *ngIf="fileobject.listOfVersionsOfSharedFiles.length > 0" ngbDropdownItem>Download Versions</button>
                 <button class="dropdown-item" (click)="open(content)" ngbDropdownItem>Preview</button>
+                <button class="dropdown-item" *ngIf="fileobject.listOfVersionsOfSharedFiles.length > 0" (click)="open(versionList)"
+                  ngbDropdownItem>Preview Versions</button>
 
                 <!-- <button class="dropdown-item" (click)="open(intent)" ngbDropdownItem>Share</button> -->
                 <button class="dropdown-item" (click)="open(whatintent)" [disabled]="fileobject.permission==='DELETE' || fileobject.permission==='READ'" ngbDropdownItem>Upload latest
@@ -103,6 +107,85 @@
             <button type="button" class="btn btn-outline-dark" (click)="modal.close('close')">Close</button>
           </div>
         </ng-template>
+
+
+
+         <!-- Modal For showing multiple versions of File to Preview  -->
+         <ng-template #versionList let-modal>
+          <div class="modal-body">
+            <ul *ngFor="let vv of versionListOfEachFile[i] ;index as j">
+              <li class="mdl-list__item">
+                <button class="btn btn-info" (click)="open(vieweveryversionfile)"><i
+                    class="material-icons">play_arrow</i> {{vv.versionname}}</button>
+                <ng-template #vieweveryversionfile let-modal>
+
+                  <div class="modal-body" *ngIf='fileType[i] === "image"' style="width: 250%;
+                        right: 400px;
+                        padding: 0px;">
+                    <img [src]="versionListOfEachFileViewUrls[i][j]" *ngIf='fileType[i] === "image"'
+                      style="    width: 100%;" />
+                  </div>
+
+                  <!-- for Pdfs -->
+                  <div class="modal-body" *ngIf='fileType[i] === "PDF"' style="    width: 200%;
+                        right: 200px;
+                        padding: 0px;
+                        height: 100px;">
+                    <iframe [src]="versionListOfEachFileViewUrls[i][j]" width="800px" height="800px"
+                      *ngIf='fileType[i] === "PDF"' style="    width: 100%; background-color:white
+                            "></iframe>
+                  </div>
+
+
+                  <div class="modal-body" *ngIf='fileType[i] === "video"' style=" padding:0px;   width: 400%;
+                            right: 500px;
+                            height: 500px; ">
+                    <video *ngIf='fileType[i] === "video"' style=" width: 75%;
+                            padding: 0px;" controls>
+                      <source [src]="versionListOfEachFileViewUrls[i][j]" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+
+
+                  <div class="modal-body" *ngIf='fileType[i] === "audio"'>
+                    <audio *ngIf='fileType[i] === "audio"' style="    width: 100%;" controls>
+                      <source [src]="versionListOfEachFileViewUrls[i][j]" type="audio/mpeg">
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                </ng-template>
+
+              </li>
+            </ul>
+          </div>
+        </ng-template>
+
+
+        <!-- Modal For showing multiple versions of File to Download  -->
+        <ng-template #versionListdownload let-modal>
+          <div class="modal-body">
+            <ul class="demo-list-icon mdl-list" *ngFor="let vv of versionListOfEachFile[i] ;index as j">
+              <li class="mdl-list__item">
+                <button class="btn btn-info" (click)="downloadVersion(i,j)"><i class="material-icons">cloud_download</i>
+                  {{vv.versionname}}</button>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
+
+        <!-- Modal for showing multiple versions for sharing to other users -->
+        <ng-template #versionListForSharing let-modal>
+          <div class="modal-body">
+            <ul class="demo-list-icon mdl-list" *ngFor="let vv of versionListOfEachFile[i] ;index as j">
+              <li class="mdl-list__item">
+                <button class="btn btn-info" (click)="openForShare(fileSharingVersionintent,vv.versionid)"><i class="material-icons">share</i>
+                  {{vv.versionname}}</button>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
+
 
 
       </div>

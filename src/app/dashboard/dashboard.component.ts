@@ -20,6 +20,10 @@ export class ShareRequestObject {
   constructor(private toemail, private fromuserid, private permission, private fileid) { }
 }
 
+export class ShareVersionRequest {
+  constructor(private toemail, private fromuserid, private permission, private fileidforversionshare) { }
+}
+
 export class ResponseStatus {
   constructor(public status) { }
 
@@ -177,6 +181,47 @@ export class DashboardComponent implements OnInit {
     debugger;
     const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
     return this.http.post<ResponseStatus>('http://localhost:8080/viewdownload/share/' + this.fileids[index], new ShareRequestObject(shareformdata.useremail, sessionStorage.getItem("userid"), this.shareformdatapermission, this.fileids[index]), { headers: header })
+      .subscribe(data => {
+        debugger;
+        console.log(data.status);
+        if (data.status === 'Already') {
+          this.alreadysharedflag = true;
+        } else if (data.status === 'SUCCESS') {
+          this.shareformsubmissionflag = true;
+        } else if (data.status === 'ERROR') {
+          this.shareformsubmissionflagerro = true;
+        }
+      },
+        error => {
+          debugger;
+          console.log(error);
+          this.shareformsubmissionflagerro = true;
+        });
+  }
+
+  //modal for sharing specific version of a file to others users
+  fileidforversionshare;
+  openForShare(content,fileversionid) {
+    this.fileidforversionshare=fileversionid;
+    console.log(fileversionid+"  version name ");
+    this.progress.percentage = 0;
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then((result) => {
+      this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    });
+  }
+
+  //for sharing specific version of a file to other users
+  submitFormForShareVersion(shareformdata){
+    console.log(shareformdata.useremail + " s " + this.fileidforversionshare);
+    if (shareformdata.useremail === '') {
+      window.alert("Please put a valid Email address");
+      return;
+    }
+    debugger;
+    const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    return this.http.post<ResponseStatus>('http://localhost:8080/viewdownload/sharebyversionid/' + this.fileidforversionshare, new ShareVersionRequest(shareformdata.useremail, sessionStorage.getItem("userid"), this.shareformdatapermission, this.fileidforversionshare), { headers: header })
       .subscribe(data => {
         debugger;
         console.log(data.status);
