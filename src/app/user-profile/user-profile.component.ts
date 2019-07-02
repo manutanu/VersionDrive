@@ -46,7 +46,7 @@ export class UserProfileComponent implements OnInit {
       .subscribe(data => {
         console.log(data);
         this.transactionList=data;
-        console.log(this.transactionList[0].actionTaken);
+        console.log(this.transactionList[0].toemail);
       },
         error => {
         });

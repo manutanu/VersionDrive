@@ -26,21 +26,21 @@
                       font-family: unset;
                       font-weight: 600;
                   ">
-                       You   {{transaction.actionTaken}}ED One File with name {{transaction.fileName}}
+                       You   {{transaction.actionTaken}}D One File with name {{transaction.fileName}} To {{transaction.toemail}}
                       </div>
                       <div class="card-body" *ngIf="transaction.actionTaken==='DOWNLOAD'"  style="
                       font-size: large;
                       font-family: unset;
                       font-weight: 600;
                   ">
-                       You   {{transaction.actionTaken}}ED This File with name {{transaction.fileName}} To {{transaction.toemail}}
+                       You   {{transaction.actionTaken}}ED This File with name {{transaction.fileName}} 
                       </div>
                       <div class="card-body" *ngIf="transaction.actionTaken==='UPLOADVERSION'"  style="
                       font-size: large;
                       font-family: unset;
                       font-weight: 600;
                   ">
-                       You   {{transaction.actionTaken}}ED new Version with name {{transaction.fileName}} 
+                       You   UPLOADED new Version with name {{transaction.fileName}} 
                       </div>
                       <hr/>
               </div>

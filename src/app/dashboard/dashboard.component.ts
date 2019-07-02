@@ -66,9 +66,11 @@ export class DashboardComponent implements OnInit {
 
   allOfTheFetchingLogic() {
     // this.toDataURL('http://localhost:8080/viewdownload/view/5/22');
+    console.log("fetch start");
     this.filelistservice.getListOfFiles().subscribe(data => {
       this.fileListobject = data;
-      console.log(data);
+      debugger;
+      
       //http://localhost:8080/viewdownload/view/{{userid}}/
       for (let i = 0; i < this.fileListobject.length; i++) {
         console.log("http://localhost:8080/viewdownload/view/" + this.userid + "/" + this.fileListobject[i].fileid);
@@ -118,6 +120,7 @@ export class DashboardComponent implements OnInit {
       useremail: '',
       permission: ''
     });
+    console.log("fetch end");
   }
 
   ngOnInit() {
@@ -300,20 +303,25 @@ export class DashboardComponent implements OnInit {
     this.uploadService.pushFileVersionToStorage(this.currentFileUpload, this.fileListobject[i].fileid).subscribe(event => {
       if (event.type === HttpEventType.UploadProgress) {
         this.progress.percentage = Math.round(100 * event.loaded / event.total);
-        if (this.progress.percentage === 100) {
-          debugger;
-          //this.allOfTheFetchingLogic();
-        }
 
       } else if (event instanceof HttpResponse) {
         console.log('File is completely uploaded!');
+        console.log(event.body+" sss  "+"  "+i+" "+this.versionListOfEachFile[i]['versionname']);
+        this.versionListOfEachFile[i].push(JSON.parse(event.body+''));
         debugger;
-        //this.allOfTheFetchingLogic();
-      }
-    });
+        this.versionListOfEachFileViewUrls[i] = [];
+        this.versionListOfEachFileDownloadUrls[i] = [];
+        //for the purpose of versionlist view and downloads of versions
+        for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
+          console.log(this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
+          this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
+          console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
+        }
+        }
+      });
     if (this.progress.percentage === 100) {
-      debugger;
-      this.allOfTheFetchingLogic();
+      
     }
     this.selectedFiles = undefined;
     this.progress.percentage = 0;
@@ -370,5 +378,9 @@ export class DashboardComponent implements OnInit {
     window.open(this.versionListOfEachFileDownloadUrls[i][j]);
   }
 
+
+  routeit(){
+    console.log("yeah");
+  }
 
 }
