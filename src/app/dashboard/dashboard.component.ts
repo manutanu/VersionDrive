@@ -100,7 +100,7 @@ export class DashboardComponent implements OnInit {
         } else if (type === 'mp3') {
           this.fileType.push('audio');
           this.viewfileurls[i] = this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
-        } else if (type === 'mkv' || type === 'mp4') {
+        } else if (type === 'mkv' || type === 'mp4' || type=== 'wmv') {
           this.fileType.push('video');
           this.viewfileurls[i] = this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
         } else if (type === 'pdf' || type === 'doc' || type === 'txt') {
@@ -289,6 +289,7 @@ export class DashboardComponent implements OnInit {
     for (let i = 0; i < this.secondarray.length; i++) {
       this.fileListobject.push(this.secondarray[i]);
     }
+    
   }
 
   //for the purpose of version Upload
@@ -358,15 +359,24 @@ export class DashboardComponent implements OnInit {
         this.progress.percentage = Math.round(100 * event.loaded / event.total);
         console.log(this.progress.percentage);
         if (this.progress.percentage === 100) {
-          this.allOfTheFetchingLogic();
+          // this.allOfTheFetchingLogic();
+          //  this.router.navigate(['/user-profile']);
+          this.router.navigateByUrl('/user-profile', {skipLocationChange: true}).then(()=>
+          this.router.navigate(["/dashboard"])); 
         }
       } else if (event instanceof HttpResponse) {
         console.log('File is completely uploaded!');
-        this.allOfTheFetchingLogic();
+        // this.allOfTheFetchingLogic();
+        // this.router.navigate(['/user-profile']);
+        this.router.navigateByUrl('/user-profile', {skipLocationChange: true}).then(()=>
+          this.router.navigate(["/dashboard"])); 
       }
     });
     if (this.progress.percentage === 100) {
-      this.allOfTheFetchingLogic();
+      // this.allOfTheFetchingLogic();
+      // this.router.navigate(['/user-profile']);
+      this.router.navigateByUrl('/user-profile', {skipLocationChange: true}).then(()=>
+          this.router.navigate(["/dashboard"])); 
     }
     this.selectedFiles = undefined;
     this.progress.percentage = 0;
@@ -383,4 +393,8 @@ export class DashboardComponent implements OnInit {
     console.log("yeah");
   }
 
+  refresh(){
+    this.router.navigateByUrl('/user-profile', {skipLocationChange: true}).then(()=>
+          this.router.navigate(["/dashboard"])); 
+  }
 }

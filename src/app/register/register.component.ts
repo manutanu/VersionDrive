@@ -53,7 +53,7 @@ export class RegisterComponent implements OnInit {
           if(this.registerresponse.status.length>0){
             if(this.registerresponse.status=== 'SUCCESS'){
             this.registerflag=true;
-            this.router.navigate(['/login']);
+            // this.router.navigate(['/login']);
             }else if(this.registerresponse.status === 'Username'){
               this.errormessageFlagusername=true;
             }else if(this.registerresponse.status === 'Useremail'){

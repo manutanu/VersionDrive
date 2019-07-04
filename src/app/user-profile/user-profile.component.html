@@ -14,12 +14,12 @@
                   ">
                        You   {{transaction.actionTaken}}ED One File with name {{transaction.fileName}}
                       </div>
-                      <div class="card-body" *ngIf="transaction.actionTaken==='DELETED'"  style="
+                      <div class="card-body" *ngIf="transaction.actionTaken==='DELETE'"  style="
                       font-size: large;
                       font-family: unset;
                       font-weight: 600;
                   ">
-                       You   {{transaction.actionTaken}}ED One File with name {{transaction.fileName}}
+                       You   {{transaction.actionTaken}}D One File with name {{transaction.fileName}}
                       </div>
                       <div class="card-body" *ngIf="transaction.actionTaken==='SHARE'"  style="
                       font-size: large;

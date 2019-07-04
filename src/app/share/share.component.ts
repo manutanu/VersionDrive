@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpEventType } from '@angular/common/http';
 import { FileListService, FileObjectForTransfere, FileObjectForShared } from '../file-list.service';
 import { DomSanitizer} from '@angular/platform-browser';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
@@ -9,6 +9,7 @@ import { UserdetailsFetchService } from '../userdetails-fetch.service';
 import { ShareRequestObject } from '../dashboard/dashboard.component';
 import { Observable } from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+import { UploadFileService } from 'app/upload-file.service';
 
 interface Alert {
   type: string;
@@ -33,13 +34,17 @@ export class ShareComponent implements OnInit {
   private bodyText: string;
   formModelobject;
   useremails;
+  progress: { percentage: number } = { percentage: 0 };
+  selectedFiles: FileList;
+  currentFileUpload: File;
+  
 
   //for the purpose of different versions of a file 
   versionListOfEachFile = [];
   versionListOfEachFileViewUrls: string[][] = [];
   versionListOfEachFileDownloadUrls: string[][] = [];
 
-  constructor(private fileservice:FileListService,private sanitizer: DomSanitizer,private modalService: NgbModal,private form:FormBuilder,private router:Router,private http:HttpClient,private userservice:UserdetailsFetchService) { 
+  constructor(private uploadService: UploadFileService,private fileservice:FileListService,private sanitizer: DomSanitizer,private modalService: NgbModal,private form:FormBuilder,private router:Router,private http:HttpClient,private userservice:UserdetailsFetchService) { 
     
     if(sessionStorage.getItem('username')==='' || sessionStorage.getItem("token")==='')
     this.router.navigate(['/login']);
@@ -191,6 +196,48 @@ delete(index){
 
 downloadVersion(i, j) {
   window.open(this.versionListOfEachFileDownloadUrls[i][j]);
+}
+
+
+upload(i) {
+  this.progress.percentage = 0;
+
+  this.currentFileUpload = this.selectedFiles.item(0);
+  this.uploadService.pushFileVersionToStorage(this.currentFileUpload, this.fileListobject[i].fileid).subscribe(event => {
+    if (event.type === HttpEventType.UploadProgress) {
+      this.progress.percentage = Math.round(100 * event.loaded / event.total);
+
+    } else if (event instanceof HttpResponse) {
+      console.log('File is completely uploaded!');
+      console.log(event.body+" sss  "+"  "+i+" "+this.versionListOfEachFile[i]['versionname']);
+      this.versionListOfEachFile[i].push(JSON.parse(event.body+''));
+      debugger;
+      this.versionListOfEachFileViewUrls[i] = [];
+      this.versionListOfEachFileDownloadUrls[i] = [];
+      //for the purpose of versionlist view and downloads of versions
+      for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
+        console.log(this.versionListOfEachFile[i][j].versionname);
+        this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
+        this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
+        console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
+      }
+      }
+    });
+  if (this.progress.percentage === 100) {
+    
+  }
+  this.selectedFiles = undefined;
+  this.progress.percentage = 0;
+}
+
+selectFileUpload(event) {
+  this.selectedFiles = event.target.files;
+}
+
+
+refresh(){
+  this.router.navigateByUrl('/user-profile', {skipLocationChange: true}).then(()=>
+        this.router.navigate(["/share"])); 
 }
 
 }

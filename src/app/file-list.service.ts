@@ -1,5 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 export class FileObjectForTransfere {
 
@@ -45,7 +46,7 @@ export class FileListService implements OnInit {
 
   }
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private router:Router) { }
 
   getListOfFiles() {
 
@@ -85,7 +86,7 @@ export class FileListService implements OnInit {
   deletefile(fileid) {
     const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
     return this.http.get('http://localhost:8080/viewdownload/deletefile/' + sessionStorage.getItem("userid") + "/" + fileid, { headers: header }).subscribe(data => {
-
+      
     });
     //.subscribe(
     //   response=>{

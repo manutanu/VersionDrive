@@ -2,7 +2,13 @@
   <div class="container-fluid">
       <h3 style="
       font-weight: 600;
-  ">People Shared These Files To you </h3>
+  ">People Shared These Files To you <button (click)="refresh()" class="btn btn-primary btn-round" style="
+      left: 900px;
+  ">
+        <i class="material-icons">refresh</i>
+      </button> </h3>
+
+   
     <div class="row">
       <div class="col-lg-3 col-md-6 col-sm-6" *ngFor="let fileobject of fileListobject ; index as i ">
         <div class="card card-stats">
@@ -30,7 +36,7 @@
                 <!-- <button class="dropdown-item" (click)="open(intent)" ngbDropdownItem>Share</button> -->
                 <button class="dropdown-item" (click)="open(whatintent)" [disabled]="fileobject.permission==='DELETE' || fileobject.permission==='READ'" ngbDropdownItem>Upload latest
                   Version</button>
-                <button class="dropdown-item" (click)="delete(i)" [disabled]="fileobject.permission==='UPDATE' || fileobject.permission==='READ'"
+                <button class="dropdown-item" (click)="delete(i)" *ngIf="fileobject.listOfVersionsOfSharedFiles.length === 0" [disabled]="fileobject.permission==='UPDATE' || fileobject.permission==='READ'"
                   ngbDropdownItem>Remove</button>
               </div>
             </div>
@@ -92,7 +98,7 @@
             </div>
 
             <label class="btn btn-default">
-              <input type="file" (change)="selectFile($event)">
+              <input type="file" (change)="selectFileUpload($event)">
             </label>
             <button class="btn btn-success" [disabled]="!selectedFiles" (click)="upload(i)">Upload</button>
           </div>
