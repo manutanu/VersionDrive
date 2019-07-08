@@ -1,46 +1,59 @@
+<!-- <app-loading-screen></app-loading-screen> -->
 <div class="main-content">
   <div class="container-fluid">
       <div class="row">
           <div class="col-md-8">
-              <div class="card">
-                  <div class="card-header card-header-danger">
-                      <h4 class="card-title">Your Activity</h4>
-                  </div>
-                  <div class="card-body" *ngFor="let transaction of transactionList"  >
+                <h4 class="card-title" style="
+                font-size: x-large;
+                font-weight: bold;
+                font-family: inherit;
+                color: black;
+            ">Your Activity</h4>
+              <div class="card" style="height: 700px;
+              overflow-y: scroll;
+                    }">
+                <div class="card-body" *ngFor="let transaction of transactionList"  >
                       <div class="card-body" *ngIf="transaction.actionTaken==='UPLOAD'"  style="
                       font-size: large;
                       font-family: unset;
                       font-weight: 600;
                   ">
-                       You   {{transaction.actionTaken}}ED One File with name {{transaction.fileName}}
+                      <i class="material-icons">arrow_forward</i> You   {{transaction.actionTaken}}ED One File with name {{transaction.fileName}}
                       </div>
                       <div class="card-body" *ngIf="transaction.actionTaken==='DELETE'"  style="
                       font-size: large;
                       font-family: unset;
                       font-weight: 600;
                   ">
-                       You   {{transaction.actionTaken}}D One File with name {{transaction.fileName}}
+                       <i class="material-icons">arrow_forward</i> You   {{transaction.actionTaken}}D One File with name {{transaction.fileName}}
                       </div>
                       <div class="card-body" *ngIf="transaction.actionTaken==='SHARE'"  style="
                       font-size: large;
                       font-family: unset;
                       font-weight: 600;
                   ">
-                       You   {{transaction.actionTaken}}D One File with name {{transaction.fileName}} To {{transaction.toemail}}
+                      <i class="material-icons">arrow_forward</i> You   {{transaction.actionTaken}}D One File with name {{transaction.fileName}} To {{transaction.toemail}}
                       </div>
                       <div class="card-body" *ngIf="transaction.actionTaken==='DOWNLOAD'"  style="
                       font-size: large;
                       font-family: unset;
                       font-weight: 600;
                   ">
-                       You   {{transaction.actionTaken}}ED This File with name {{transaction.fileName}} 
+                       <i class="material-icons">arrow_forward</i> You   {{transaction.actionTaken}}ED This File with name {{transaction.fileName}} 
                       </div>
                       <div class="card-body" *ngIf="transaction.actionTaken==='UPLOADVERSION'"  style="
                       font-size: large;
                       font-family: unset;
                       font-weight: 600;
                   ">
-                       You   UPLOADED new Version with name {{transaction.fileName}} 
+                    <i class="material-icons">arrow_forward</i>   You   UPLOADED new Version with name {{transaction.fileName}} 
+                      </div>
+                      <div class="card-body" *ngIf="transaction.actionTaken==='DELETED VERSION'"  style="
+                      font-size: large;
+                      font-family: unset;
+                      font-weight: 600;
+                  ">
+                    <i class="material-icons">arrow_forward</i>   You  have deleted a Version with name {{transaction.fileName}} 
                       </div>
                       <hr/>
               </div>

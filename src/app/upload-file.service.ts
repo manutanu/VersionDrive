@@ -36,5 +36,19 @@ export class UploadFileService {
  
     return this.http.request(req);
   }
- 
+
+pushFileVersionToStoragefromShare(file: File,fileid,userid): Observable<HttpEvent<{}>> {
+  const formdata: FormData = new FormData();
+
+  formdata.append('file', file);
+  
+  const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
+  const req = new HttpRequest('POST', 'http://localhost:8080/uploadversion/'+userid+'/'+fileid, formdata, {headers:header,
+    reportProgress: true,
+    responseType: 'text',
+  });
+
+  return this.http.request(req);
+}
+
 }

@@ -15,11 +15,13 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { NgbModule, NgbPaginationModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { AdminLayoutModule } from './layouts/admin-layout/admin-layout.module';
+import { LoadingScreenComponent } from './loading-screen/loading-screen.component';
+import { AuthInterceptor } from './auth.interceptor';
 
 
 @NgModule({
@@ -45,8 +47,14 @@ import { AdminLayoutModule } from './layouts/admin-layout/admin-layout.module';
     AdminLayoutComponent,
     LoginComponent,
     RegisterComponent,
+    LoadingScreenComponent
   ],
-  providers: [],
+  entryComponents: [
+    // LoadingScreenComponent
+  ],
+  providers: [
+    {provide: HTTP_INTERCEPTORS,useClass: AuthInterceptor,multi:true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

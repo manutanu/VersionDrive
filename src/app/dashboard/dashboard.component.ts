@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { UserdetailsFetchService } from '../userdetails-fetch.service';
 import { UploadFileService } from '../upload-file.service';
+import { LoadingScreenService } from 'app/loading-screen.service';
 
 
 interface Alert {
@@ -43,6 +44,7 @@ export class DashboardComponent implements OnInit {
   versionListOfEachFile = [];
   versionListOfEachFileViewUrls: string[][] = [];
   versionListOfEachFileDownloadUrls: string[][] = [];
+  versionListOfEachFileDeleteUrls:string[][]= [];
   viewfileurls = [];
   downloadfileurls = [];
   fileids = [];
@@ -53,18 +55,27 @@ export class DashboardComponent implements OnInit {
   useremails;
   selectedFiles: FileList;
   currentFileUpload: File;
+  firstviewurlarray:String[]=[];
+  secondviewurlarray:String[]=[];
+  firstdownloadurlarray:String[]=[];
+  seconddownloadurlarray:String[]=[];
+  firstarray;
+  firsttypearray:String[]=[];
+  secondarray;
+  secondtypearray:String[]=[];
   progress: { percentage: number } = { percentage: 0 };
 
 
 
 
-  constructor(private uploadService: UploadFileService, private filelistservice: FileListService, private sanitizer: DomSanitizer, private modalService: NgbModal, private form: FormBuilder, private router: Router, private http: HttpClient, private userservice: UserdetailsFetchService) {
+  constructor(private loadingScreenService:LoadingScreenService,private uploadService: UploadFileService, private filelistservice: FileListService, private sanitizer: DomSanitizer, private modalService: NgbModal, private form: FormBuilder, private router: Router, private http: HttpClient, private userservice: UserdetailsFetchService) {
     if (sessionStorage.getItem('username') === '' || sessionStorage.getItem("token") === '')
       this.router.navigate(['/login']);
     this.allOfTheFetchingLogic();
   }
 
   allOfTheFetchingLogic() {
+    this.loadingScreenService.startLoading();
     // this.toDataURL('http://localhost:8080/viewdownload/view/5/22');
     console.log("fetch start");
     this.filelistservice.getListOfFiles().subscribe(data => {
@@ -83,11 +94,13 @@ export class DashboardComponent implements OnInit {
         this.versionListOfEachFile.push(this.fileListobject[i].versionList);
         this.versionListOfEachFileViewUrls[i] = [];
         this.versionListOfEachFileDownloadUrls[i] = [];
+        this.versionListOfEachFileDeleteUrls[i]=[];
         //for the purpose of versionlist view and downloads of versions
         for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
           console.log(this.versionListOfEachFile[i][j].versionname);
           this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
           this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileDeleteUrls[i].push("http://localhost:8080/viewdownload/deleteVersion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
           console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
         }
 
@@ -112,7 +125,9 @@ export class DashboardComponent implements OnInit {
         }
         //console.log((name.length-(name.length-3))+"  "+name+" "+name.length+"  "+type+" t "+this.fileType);
       }
+      this.loadingScreenService.stopLoading();
     }, error => {
+      this.loadingScreenService.stopLoading();
       this.router.navigate(['/login']);
     });
 
@@ -142,8 +157,10 @@ export class DashboardComponent implements OnInit {
   open(content) {
     this.progress.percentage = 0;
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then((result) => {
+      this.refresh();
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
+      this.refresh();
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
   }
@@ -176,6 +193,7 @@ export class DashboardComponent implements OnInit {
   rs: ResponseStatus;
   alreadysharedflag = false;
   submitFormForShare(shareformdata, index) {
+    this.loadingScreenService.startLoading();
     console.log(shareformdata.useremail + " s " + index);
     if (shareformdata.useremail === '') {
       window.alert("Please put a valid Email address");
@@ -194,10 +212,12 @@ export class DashboardComponent implements OnInit {
         } else if (data.status === 'ERROR') {
           this.shareformsubmissionflagerro = true;
         }
+        this.loadingScreenService.stopLoading();
       },
         error => {
           debugger;
           console.log(error);
+          this.loadingScreenService.stopLoading();
           this.shareformsubmissionflagerro = true;
         });
   }
@@ -217,6 +237,7 @@ export class DashboardComponent implements OnInit {
 
   //for sharing specific version of a file to other users
   submitFormForShareVersion(shareformdata){
+    this.loadingScreenService.startLoading();
     console.log(shareformdata.useremail + " s " + this.fileidforversionshare);
     if (shareformdata.useremail === '') {
       window.alert("Please put a valid Email address");
@@ -235,10 +256,12 @@ export class DashboardComponent implements OnInit {
         } else if (data.status === 'ERROR') {
           this.shareformsubmissionflagerro = true;
         }
+        this.loadingScreenService.stopLoading();
       },
         error => {
           debugger;
           console.log(error);
+          this.loadingScreenService.stopLoading();
           this.shareformsubmissionflagerro = true;
         });
   }
@@ -274,22 +297,44 @@ export class DashboardComponent implements OnInit {
   //   )
 
   //delete file 
-  firstarray;
-  secondarray;
+
   delete(index) {
+    this.loadingScreenService.startLoading();
     this.filelistservice.deletefile(this.fileListobject[index].fileid);
-    console.log("deleted Successfully");
+    console.log("deleted Successfully"+"type array "+this.fileType.length+"  "+this.fileListobject.length);
+    this.firstdownloadurlarray=this.downloadfileurls.slice(0, index);
+    this.seconddownloadurlarray=this.downloadfileurls.slice(index + 1, this.downloadfileurls.length);
+    this.firstviewurlarray=this.viewfileurls.slice(0, index);
+    this.secondviewurlarray=this.viewfileurls.slice(index + 1, this.viewfileurls.length);
+    this.firsttypearray=this.fileType.slice(0, index);
     this.firstarray = this.fileListobject.slice(0, index);
+    this.secondtypearray=this.fileType.slice(index + 1, this.fileType.length);
     this.secondarray = this.fileListobject.slice(index + 1, this.fileListobject.length);
     console.log(this.fileListobject + " ss " + this.firstarray + " ss " + this.secondarray);
     this.fileListobject = [];
+    this.fileType=[];
+    this.viewfileurls=[];
+    this.downloadfileurls=[];
+    console.log(this.fileType.length+"  "+this.fileListobject.length+" "+this.firstarray.length+" "+this.firsttypearray.length+" "+this.secondtypearray.length+" s "+this.secondarray.length);
     for (let i = 0; i < this.firstarray.length; i++) {
       this.fileListobject.push(this.firstarray[i]);
+      this.fileType.push(this.firsttypearray[i]);
+      this.viewfileurls.push(this.firstviewurlarray[i]);
+      this.downloadfileurls.push(this.firstdownloadurlarray[i]);
+      console.log(this.firsttypearray[i]+"  f"+this.firstdownloadurlarray[i]+" "+this.firstviewurlarray[i]);
     }
     for (let i = 0; i < this.secondarray.length; i++) {
       this.fileListobject.push(this.secondarray[i]);
+      this.fileType.push(this.secondtypearray[i]);
+      this.viewfileurls.push(this.secondviewurlarray[i]);
+      this.downloadfileurls.push(this.seconddownloadurlarray[i]);
+      console.log(this.secondtypearray[i]+"  "+this.seconddownloadurlarray[i]+"  "+this.secondviewurlarray[i]);
     }
-    
+    for(let i=0;i<this.fileType.length;i++){
+    console.log(i+" type "+this.fileType[i]);
+    console.log(i+" type "+this.fileListobject[i].fileid);
+    }
+    this.loadingScreenService.stopLoading();
   }
 
   //for the purpose of version Upload
@@ -312,11 +357,13 @@ export class DashboardComponent implements OnInit {
         debugger;
         this.versionListOfEachFileViewUrls[i] = [];
         this.versionListOfEachFileDownloadUrls[i] = [];
+        this.versionListOfEachFileDeleteUrls[i]=[];
         //for the purpose of versionlist view and downloads of versions
         for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
           console.log(this.versionListOfEachFile[i][j].versionname);
           this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
           this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileDeleteUrls[i].push("http://localhost:8080/viewdownload/deleteVersion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
           console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
         }
         }
@@ -396,5 +443,11 @@ export class DashboardComponent implements OnInit {
   refresh(){
     this.router.navigateByUrl('/user-profile', {skipLocationChange: true}).then(()=>
           this.router.navigate(["/dashboard"])); 
+  }
+
+  deleteVersion(i,j){
+    console.log(this.versionListOfEachFileDeleteUrls[i][j]);
+    this.filelistservice.deleteFileVersion(this.versionListOfEachFileDeleteUrls[i][j]);
+    this.refresh();
   }
 }

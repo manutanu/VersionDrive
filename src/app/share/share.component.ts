@@ -10,6 +10,7 @@ import { ShareRequestObject } from '../dashboard/dashboard.component';
 import { Observable } from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import { UploadFileService } from 'app/upload-file.service';
+import { LoadingScreenService } from 'app/loading-screen.service';
 
 interface Alert {
   type: string;
@@ -37,6 +38,7 @@ export class ShareComponent implements OnInit {
   progress: { percentage: number } = { percentage: 0 };
   selectedFiles: FileList;
   currentFileUpload: File;
+  versionListOfEachFileDeleteUrls:string[][]= [];
   
 
   //for the purpose of different versions of a file 
@@ -44,7 +46,7 @@ export class ShareComponent implements OnInit {
   versionListOfEachFileViewUrls: string[][] = [];
   versionListOfEachFileDownloadUrls: string[][] = [];
 
-  constructor(private uploadService: UploadFileService,private fileservice:FileListService,private sanitizer: DomSanitizer,private modalService: NgbModal,private form:FormBuilder,private router:Router,private http:HttpClient,private userservice:UserdetailsFetchService) { 
+  constructor(private loadingScreenService:LoadingScreenService,private uploadService: UploadFileService,private fileservice:FileListService,private sanitizer: DomSanitizer,private modalService: NgbModal,private form:FormBuilder,private router:Router,private http:HttpClient,private userservice:UserdetailsFetchService) { 
     
     if(sessionStorage.getItem('username')==='' || sessionStorage.getItem("token")==='')
     this.router.navigate(['/login']);
@@ -54,7 +56,7 @@ export class ShareComponent implements OnInit {
   }
 
   allFetchLogic(){
-    
+    this.loadingScreenService.startLoading();
     this.fileservice.getAllSharedFiles().subscribe(data=>{
       this.fileListobject=data;
       //http://localhost:8080/viewdownload/view/{{userid}}/
@@ -69,11 +71,13 @@ export class ShareComponent implements OnInit {
           this.versionListOfEachFile.push(this.fileListobject[i].listOfVersionsOfSharedFiles);
         this.versionListOfEachFileViewUrls[i] = [];
         this.versionListOfEachFileDownloadUrls[i] = [];
+        this.versionListOfEachFileDeleteUrls[i]=[];
         //for the purpose of versionlist view and downloads of versions
         for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
           console.log(this.versionListOfEachFile[i][j].versionname);
           this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname + "");
           this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileDeleteUrls[i].push("http://localhost:8080/viewdownload/deleteVersion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
           console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
         }
 
@@ -93,8 +97,11 @@ export class ShareComponent implements OnInit {
             this.viewfileurls[i]=this.sanitizer.bypassSecurityTrustResourceUrl(this.viewfileurls[i]);
           }
           //console.log((name.length-(name.length-3))+"  "+name+" "+name.length+"  "+type+" t "+this.fileType);
+          
       }
+      this.loadingScreenService.stopLoading();
   },error =>{
+    this.loadingScreenService.stopLoading();
     this.router.navigate(['/login']);
   });
   }
@@ -120,8 +127,10 @@ download(index){
 open(content) {
   this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
     this.closeResult = `Closed with: ${result}`;
+    this.refresh();
   }, (reason) => {
     this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    this.refresh();
   });
 }
 
@@ -137,16 +146,20 @@ private getDismissReason(reason: any): string {
 }
 
 submitFormForShare(shareformdata,index){
+  this.loadingScreenService.startLoading();
   console.log(shareformdata.permission+" s "+shareformdata.useremail+" s "+index);
   this.shareformsubmissionflag=true;
-  const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
-     return this.http.post('http://localhost:8080/viewdownload/share/'+this.fileids[index],new ShareRequestObject(shareformdata.useremail,sessionStorage.getItem("userid"),shareformdata.permission,this.fileids[index]) ,{headers:header})
+  // const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
+  // ,{headers:header}
+     return this.http.post('http://localhost:8080/viewdownload/share/'+this.fileids[index],new ShareRequestObject(shareformdata.useremail,sessionStorage.getItem("userid"),shareformdata.permission,this.fileids[index]) )
      .subscribe(data =>{
-          
+      this.loadingScreenService.stopLoading();
      },
      error =>{
+      this.loadingScreenService.stopLoading();
       this.shareformsubmissionflagerro=true;
      });
+
 }
 
 //dont know why i made this method
@@ -179,7 +192,8 @@ text$.pipe(
   firstarray;
 secondarray;
 delete(index){
-  this.fileservice.deletefile(this.fileListobject[index].fileid);
+  this.loadingScreenService.startLoading();
+  this.fileservice.deletefileFromShare(this.fileListobject[index].fileid,this.fileListobject[index].ownerid);
         console.log("deleted Successfully");
         this.firstarray=this.fileListobject.slice(0,index);
         this.secondarray=this.fileListobject.slice(index+1,this.fileListobject.length);
@@ -191,6 +205,7 @@ delete(index){
         for(let i=0;i<this.secondarray.length;i++){
             this.fileListobject.push(this.secondarray[i]);
         }
+        this.loadingScreenService.stopLoading();
 }
 
 
@@ -203,7 +218,7 @@ upload(i) {
   this.progress.percentage = 0;
 
   this.currentFileUpload = this.selectedFiles.item(0);
-  this.uploadService.pushFileVersionToStorage(this.currentFileUpload, this.fileListobject[i].fileid).subscribe(event => {
+  this.uploadService.pushFileVersionToStoragefromShare(this.currentFileUpload, this.fileListobject[i].fileid,this.fileListobject[i].ownerid).subscribe(event => {
     if (event.type === HttpEventType.UploadProgress) {
       this.progress.percentage = Math.round(100 * event.loaded / event.total);
 
@@ -214,12 +229,14 @@ upload(i) {
       debugger;
       this.versionListOfEachFileViewUrls[i] = [];
       this.versionListOfEachFileDownloadUrls[i] = [];
+      this.versionListOfEachFileDeleteUrls[i]=[];
       //for the purpose of versionlist view and downloads of versions
       for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
         console.log(this.versionListOfEachFile[i][j].versionname);
-        this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
-        this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
-        console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
+        this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname + "");
+        this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
+        this.versionListOfEachFileDeleteUrls[i].push("http://localhost:8080/viewdownload/deleteVersion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
+        console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]+"    "+this.fileListobject[i].ownerid );
       }
       }
     });
@@ -238,6 +255,12 @@ selectFileUpload(event) {
 refresh(){
   this.router.navigateByUrl('/user-profile', {skipLocationChange: true}).then(()=>
         this.router.navigate(["/share"])); 
+}
+
+deleteVersion(i,j){
+  console.log(this.versionListOfEachFileDeleteUrls[i][j]+"  here i am deleting ");
+  this.fileservice.deleteFileVersion(this.versionListOfEachFileDeleteUrls[i][j]);
+  this.refresh();
 }
 
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { LoadingScreenService } from 'app/loading-screen.service';
 
 
 
@@ -26,31 +27,37 @@ export class UserProfileComponent implements OnInit {
 
   transactionList:Transaction[]=[];
 
-  constructor(private router:Router,private http:HttpClient) {
+  constructor(private loadingScreenService:LoadingScreenService,private router:Router,private http:HttpClient) {
     if(sessionStorage.getItem('username')==='' || sessionStorage.getItem("token")==='')
     this.router.navigate(['/login']);
    }
 
    userProfileObject:UserObject;
   ngOnInit() {
-    const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-    this.http.get<UserObject>('http://localhost:8080/viewdownload/getUserProfile/' + sessionStorage.getItem("userid"), { headers: header })
+    this.loadingScreenService.startLoading();
+    // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    // , { headers: header }
+    this.http.get<UserObject>('http://localhost:8080/viewdownload/getUserProfile/' + sessionStorage.getItem("userid"))
       .subscribe(data => {
         console.log(data);
         this.userProfileObject=data;
+        this.loadingScreenService.stopLoading();
       },
         error => {
+          this.loadingScreenService.stopLoading();
         });
-
-        this.http.get<Transaction[]>('http://localhost:8080/viewdownload/activity/' + sessionStorage.getItem("userid"), { headers: header })
+        // , { headers: header }
+        this.http.get<Transaction[]>('http://localhost:8080/viewdownload/activity/' + sessionStorage.getItem("userid"))
       .subscribe(data => {
         console.log(data);
         this.transactionList=data;
         console.log(this.transactionList[0].toemail);
+        this.loadingScreenService.stopLoading();
       },
         error => {
+          this.loadingScreenService.stopLoading();
         });
-        
+        // this.loadingScreenService.stopLoading(); 
   }
 
 

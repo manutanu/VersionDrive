@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { LoadingScreenService } from 'app/loading-screen.service';
 
 export class JwtRequest{
     constructor(public username: String ,public password:String){
@@ -22,7 +23,7 @@ export class LoginComponent{
     formModelobject;
     jwtresponse;
 
-    constructor(private form:FormBuilder,private router:Router,private http:HttpClient){
+    constructor(private loadingScreenService:LoadingScreenService,private form:FormBuilder,private router:Router,private http:HttpClient){
         this.formModelobject=this.form.group({
             username:'',
             password:''
@@ -30,6 +31,7 @@ export class LoginComponent{
     }
 
     onSubmit(formmodeldata){
+        this.loadingScreenService.startLoading();
          let flag;
         console.log(formmodeldata.username+" "+formmodeldata.password);
         let obs= this.http.post<JwtResponse>("http://localhost:8080/authenticate", new JwtRequest(formmodeldata.username,formmodeldata.password));
@@ -42,12 +44,14 @@ export class LoginComponent{
             sessionStorage.setItem("token",this.jwtresponse.token);
             sessionStorage.setItem("username",formmodeldata.username);
             sessionStorage.setItem("userid",this.jwtresponse.userid);
+            this.loadingScreenService.stopLoading();
             this.router.navigate(['/dashboard']);
 
         },
         error => {
             flag=false;
-            window.alert("Sorry you are not in our family ");
+            window.alert("Sorry you are not in our family or incorrect credentials ! ");
+            this.loadingScreenService.stopLoading();
         }
         );
     }

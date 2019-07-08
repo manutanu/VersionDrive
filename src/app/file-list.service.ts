@@ -11,6 +11,9 @@ export class FileObjectForTransfere {
   public versionList=[];
 }
 
+export interface Status{
+  status;
+}
 export class Share{
 
 
@@ -50,8 +53,8 @@ export class FileListService implements OnInit {
 
   getListOfFiles() {
 
-    const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-    return this.http.get<FileObjectForTransfere[]>('http://localhost:8080/viewdownload/getallfiles/' + sessionStorage.getItem("userid"), { headers: header });
+    //const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    return this.http.get<FileObjectForTransfere[]>('http://localhost:8080/viewdownload/getallfiles/' + sessionStorage.getItem("userid"));
     //.subscribe(
     //   response=>{
     //     for(let i=0; i< response.length;i++){
@@ -67,8 +70,9 @@ export class FileListService implements OnInit {
   }
 
   getAllSharedFiles() {
-    const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-    return this.http.get<FileObjectForShared[]>('http://localhost:8080/viewdownload/shared/' + sessionStorage.getItem("userid"), { headers: header });
+    // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    // , { headers: header }
+    return this.http.get<FileObjectForShared[]>('http://localhost:8080/viewdownload/shared/' + sessionStorage.getItem("userid"));
     //.subscribe(
     //   response=>{
     //     for(let i=0; i< response.length;i++){
@@ -84,8 +88,9 @@ export class FileListService implements OnInit {
   }
 
   deletefile(fileid) {
-    const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-    return this.http.get('http://localhost:8080/viewdownload/deletefile/' + sessionStorage.getItem("userid") + "/" + fileid, { headers: header }).subscribe(data => {
+    // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    // , { headers: header }
+    return this.http.get('http://localhost:8080/viewdownload/deletefile/' + sessionStorage.getItem("userid") + "/" + fileid).subscribe(data => {
       
     });
     //.subscribe(
@@ -100,6 +105,37 @@ export class FileListService implements OnInit {
     //     }
     //   }
     // );
+  }
+
+  deletefileFromShare(fileid,userid) {
+    // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    // , { headers: header }
+    console.log("what is your problem bro "+fileid+"   "+userid);
+    return this.http.get('http://localhost:8080/viewdownload/deletefile/' + userid + "/" + fileid).subscribe(data => {
+      
+    });
+    //.subscribe(
+    //   response=>{
+    //     for(let i=0; i< response.length;i++){
+    //       let temp=new FileObjectForTransfere();
+    //       temp.creationDate=response[i].creationDate.toString();
+    //       temp.fileid=response[i].fileid;
+    //       temp.filename=response[i].filename;
+    //       //this.listOfFiles.push(temp);
+    //       console.log(response[i].fileid+" "+response[i].filename+" "+response[i].creationDate.toString());
+    //     }
+    //   }
+    // );
+  }
+
+  deleteFileVersion(url){
+    // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    // , { headers: header }
+    let responsedata;
+    return this.http.get<Status>(url).subscribe(data => {
+      responsedata=data.status;
+      console.log(responsedata);
+    });
   }
 
 }

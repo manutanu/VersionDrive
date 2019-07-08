@@ -4,6 +4,7 @@
         <div class="sidebar-background" style="background:white"></div>
     </div>
     <div class="main-panel">
+        <app-loading-screen></app-loading-screen>
         <app-navbar></app-navbar>
         <router-outlet></router-outlet>
         <div *ngIf="isMaps('maps')">

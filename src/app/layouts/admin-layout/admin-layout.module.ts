@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +17,7 @@ import {
   MatTooltipModule,
   MatSelectModule
 } from '@angular/material';
+import { LoadingScreenComponent } from 'app/loading-screen/loading-screen.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -34,8 +35,10 @@ import {
     DashboardComponent,
     UserProfileComponent,
     NotificationsComponent,
-    ShareComponent
+    ShareComponent,
+    // LoadingScreenComponent
   ]
+  // schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 
 export class AdminLayoutModule {}

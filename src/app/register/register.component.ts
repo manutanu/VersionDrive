@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { LoadingScreenService } from 'app/loading-screen.service';
 
 interface Alert {
   type: string;
@@ -24,6 +25,7 @@ export class RegisterComponent implements OnInit {
   registerflag=false;
   errormessageFlagusername=false;
   errormessageFlaguseremail=false;
+  errormessageFlagemailnotfound=false;
   errorpasswordsnotsame=false;
     ngOnInit(): void {
 
@@ -31,7 +33,7 @@ export class RegisterComponent implements OnInit {
   formModelobject;
   registerresponse;
 
-  constructor(private form:FormBuilder,private router:Router,private http:HttpClient){
+  constructor(private loadingScreenService:LoadingScreenService,private form:FormBuilder,private router:Router,private http:HttpClient){
       this.formModelobject=this.form.group({
           username:'',
           password:'',
@@ -41,14 +43,17 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit(formmodeldata){
+    this.loadingScreenService.startLoading();
       console.log(formmodeldata.username+" "+formmodeldata.password +" "+formmodeldata.email);
       if(formmodeldata.password != formmodeldata.repassword){
           console.log("note same");
+          this.loadingScreenService.stopLoading();
           this.errorpasswordsnotsame=true;
           return ;
       }
       let obs= this.http.post("http://localhost:8080/register", new RegisterRequest(formmodeldata.username,formmodeldata.password,formmodeldata.email));
       obs.subscribe(data => {
+        
           this.registerresponse=data;
           if(this.registerresponse.status.length>0){
             if(this.registerresponse.status=== 'SUCCESS'){
@@ -58,8 +63,11 @@ export class RegisterComponent implements OnInit {
               this.errormessageFlagusername=true;
             }else if(this.registerresponse.status === 'Useremail'){
               this.errormessageFlaguseremail=true;
+            }else if(this.registerresponse.status === 'ADDRESS'){
+              this.errormessageFlagemailnotfound=true;
             }
           }
+          this.loadingScreenService.stopLoading();
       },
       error => {
           window.alert("Sorry you are not in our family ");
@@ -72,5 +80,6 @@ export class RegisterComponent implements OnInit {
       this.errormessageFlaguseremail=false;
       this.errormessageFlagusername=false;
       this.errorpasswordsnotsame=false;
+      this.errormessageFlagemailnotfound=false;
   }
 }

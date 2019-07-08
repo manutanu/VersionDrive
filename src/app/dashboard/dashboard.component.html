@@ -1,5 +1,8 @@
+
 <div class="main-content">
+  
   <div class="container-fluid">
+      <!-- <app-loading-screen></app-loading-screen> -->
     <div class="row">
       <button (click)="open(fileuploadintent)" class="btn btn-primary btn-round">
         <i class="material-icons">cloud_upload</i> Upload New File
@@ -67,6 +70,8 @@
                   Version</button>
                 <button class="dropdown-item" (click)="delete(i)" *ngIf="fileobject.versionList.length === 0"
                   ngbDropdownItem>Remove</button>
+                  <button class="dropdown-item" (click)="open(versionListdelete)" *ngIf="fileobject.versionList.length > 0"
+                  ngbDropdownItem>Remove Versions</button>
                 <!-- <button class="dropdown-item" *ngIf="fileobject.versionList.length > 0" ngbDropdownItem>Remove
                   Versions</button> -->
                 <!-- <button class="dropdown-item"  ngbDropdownItem>Shared Amongst</button> -->
@@ -78,7 +83,7 @@
 
         <!-- Modal for preview purpose -->
         <ng-template #content let-modal>
-
+            <!-- <img src="assets/SS.svg"  style="width: 100%;background-color: black;" /> -->
           <div class="modal-body" *ngIf='fileType[i] === "image"' style="width: 250%;
                 right: 400px;
                 padding: 0px;">
@@ -193,7 +198,7 @@
                 <button class="btn btn-info" (click)="open(vieweveryversionfile)"><i
                     class="material-icons">play_arrow</i> {{vv.versionname}}</button>
                 <ng-template #vieweveryversionfile let-modal>
-
+                  
                   <div class="modal-body" *ngIf='fileType[i] === "image"' style="width: 250%;
                         right: 400px;
                         padding: 0px;">
@@ -248,6 +253,18 @@
             </ul>
           </div>
         </ng-template>
+
+        <!-- Modal For showing multiple versions of File to DELETE  -->
+        <ng-template #versionListdelete  let-modal>  
+            <div class="modal-body">
+              <ul class="demo-list-icon mdl-list" *ngFor="let vv of versionListOfEachFile[i] ;index as j">
+                <li class="mdl-list__item">
+                  <button class="btn btn-info" (click)="deleteVersion(i,j)"><i class="material-icons">delete</i>
+                     {{vv.versionname}}</button>
+                </li>
+              </ul>
+            </div>
+          </ng-template>
 
         <!-- Modal for showing multiple versions for sharing to other users -->
         <ng-template #versionListForSharing let-modal>

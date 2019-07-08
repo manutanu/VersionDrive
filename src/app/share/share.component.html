@@ -1,3 +1,4 @@
+<!-- <app-loading-screen></app-loading-screen> -->
 <div class="main-content">
   <div class="container-fluid">
       <h3 style="
@@ -8,7 +9,8 @@
         <i class="material-icons">refresh</i>
       </button> </h3>
 
-   
+  
+
     <div class="row">
       <div class="col-lg-3 col-md-6 col-sm-6" *ngFor="let fileobject of fileListobject ; index as i ">
         <div class="card card-stats">
@@ -25,6 +27,7 @@
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Actions
               </button>
+              
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <button class="dropdown-item" (click)="download(i)" [disabled]="fileobject.permission==='READ'" ngbDropdownItem>Download</button>
                 <button class="dropdown-item" (click)="open(versionListdownload)"
@@ -34,10 +37,12 @@
                   ngbDropdownItem>Preview Versions</button>
 
                 <!-- <button class="dropdown-item" (click)="open(intent)" ngbDropdownItem>Share</button> -->
-                <button class="dropdown-item" (click)="open(whatintent)" [disabled]="fileobject.permission==='DELETE' || fileobject.permission==='READ'" ngbDropdownItem>Upload latest
+                <button class="dropdown-item" (click)="open(whatintent)" [disabled]="fileobject.permission==='READ'" ngbDropdownItem>Upload latest
                   Version</button>
                 <button class="dropdown-item" (click)="delete(i)" *ngIf="fileobject.listOfVersionsOfSharedFiles.length === 0" [disabled]="fileobject.permission==='UPDATE' || fileobject.permission==='READ'"
                   ngbDropdownItem>Remove</button>
+                  <button class="dropdown-item" (click)="open(versionListForDelete)" [disabled]="fileobject.permission==='UPDATE' || fileobject.permission==='READ'" *ngIf="fileobject.listOfVersionsOfSharedFiles.length > 0"
+                      ngbDropdownItem>Remove Versions</button>
               </div>
             </div>
           </div>
@@ -46,6 +51,7 @@
 
         <!-- Modal for preview purpose -->
         <ng-template #content let-modal>
+          
           <!-- for Images -->
           <div class="modal-body" *ngIf='fileType[i] === "image"' style="width: 250%;
                     right: 400px;
@@ -179,6 +185,18 @@
             </ul>
           </div>
         </ng-template>
+
+          <!-- Modal For showing multiple versions of File to DELETE  -->
+          <ng-template  #versionListForDelete let-modal>  
+              <div class="modal-body">
+                <ul class="demo-list-icon mdl-list" *ngFor="let vv of versionListOfEachFile[i] ;index as j">
+                  <li class="mdl-list__item">
+                    <button class="btn btn-info" (click)="deleteVersion(i,j)"><i class="material-icons">delete</i>
+                       {{vv.versionname}}</button>
+                  </li>
+                </ul>
+              </div>
+            </ng-template>
 
         <!-- Modal for showing multiple versions for sharing to other users -->
         <ng-template #versionListForSharing let-modal>
