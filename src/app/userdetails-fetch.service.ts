@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { environment } from 'environments/environment';
 
 
 @Injectable({
@@ -17,8 +18,8 @@ export class UserdetailsFetchService {
 
   getListOfUsers(){
     
-    const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
-     return this.http.get('http://localhost:8080/viewdownload/getallUserdetails', {headers:header});
+    // const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
+     return this.http.get(environment.urlstring+'/viewdownload/getallUserdetails');
      //.subscribe(
     //   response=>{
     //     for(let i=0; i< response.length;i++){

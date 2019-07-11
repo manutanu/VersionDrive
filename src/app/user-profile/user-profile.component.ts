@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoadingScreenService } from 'app/loading-screen.service';
+import { environment } from 'environments/environment';
 
 
 
@@ -37,7 +38,7 @@ export class UserProfileComponent implements OnInit {
     this.loadingScreenService.startLoading();
     // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
     // , { headers: header }
-    this.http.get<UserObject>('http://localhost:8080/viewdownload/getUserProfile/' + sessionStorage.getItem("userid"))
+    this.http.get<UserObject>(environment.urlstring+'/viewdownload/getUserProfile/' + sessionStorage.getItem("userid"))
       .subscribe(data => {
         console.log(data);
         this.userProfileObject=data;
@@ -47,7 +48,7 @@ export class UserProfileComponent implements OnInit {
           this.loadingScreenService.stopLoading();
         });
         // , { headers: header }
-        this.http.get<Transaction[]>('http://localhost:8080/viewdownload/activity/' + sessionStorage.getItem("userid"))
+        this.http.get<Transaction[]>(environment.urlstring+'/viewdownload/activity/' + sessionStorage.getItem("userid"))
       .subscribe(data => {
         console.log(data);
         this.transactionList=data;

@@ -10,6 +10,7 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { UserdetailsFetchService } from '../userdetails-fetch.service';
 import { UploadFileService } from '../upload-file.service';
 import { LoadingScreenService } from 'app/loading-screen.service';
+import { environment } from 'environments/environment';
 
 
 interface Alert {
@@ -84,26 +85,29 @@ export class DashboardComponent implements OnInit {
       
       //http://localhost:8080/viewdownload/view/{{userid}}/
       for (let i = 0; i < this.fileListobject.length; i++) {
-        console.log("http://localhost:8080/viewdownload/view/" + this.userid + "/" + this.fileListobject[i].fileid);
-        this.viewfileurls.push("http://localhost:8080/viewdownload/view/" + this.userid + "/" + this.fileListobject[i].fileid);
-        this.downloadfileurls.push("http://localhost:8080/viewdownload/download/" + this.userid + "/" + this.fileListobject[i].fileid);
+        
+        console.log(environment.urlstring+"/viewdownload/view/" + this.userid + "/" + this.fileListobject[i].fileid);
+        this.viewfileurls.push(environment.urlstring+"/viewdownload/view/" + this.userid + "/" + this.fileListobject[i].fileid);
+        this.downloadfileurls.push(environment.urlstring+"/viewdownload/download/" + this.userid + "/" + this.fileListobject[i].fileid);
         this.viewflag.push(false);
+        
         let name: String = this.fileListobject[i].filename;
         this.fileids.push(this.fileListobject[i].fileid);
         this.shareListOfEachFile = this.fileListobject[i].shareList;
         this.versionListOfEachFile.push(this.fileListobject[i].versionList);
+        
         this.versionListOfEachFileViewUrls[i] = [];
         this.versionListOfEachFileDownloadUrls[i] = [];
         this.versionListOfEachFileDeleteUrls[i]=[];
+        
         //for the purpose of versionlist view and downloads of versions
         for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
           console.log(this.versionListOfEachFile[i][j].versionname);
-          this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
-          this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
-          this.versionListOfEachFileDeleteUrls[i].push("http://localhost:8080/viewdownload/deleteVersion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileViewUrls[i].push(environment.urlstring+"/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
+          this.versionListOfEachFileDownloadUrls[i].push(environment.urlstring+"/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileDeleteUrls[i].push(environment.urlstring+"/viewdownload/deleteVersion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
           console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
         }
-
 
 
         let type = name.substring((name.length - 3), name.length);
@@ -200,8 +204,8 @@ export class DashboardComponent implements OnInit {
       return;
     }
     debugger;
-    const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-    return this.http.post<ResponseStatus>('http://localhost:8080/viewdownload/share/' + this.fileids[index], new ShareRequestObject(shareformdata.useremail, sessionStorage.getItem("userid"), this.shareformdatapermission, this.fileids[index]), { headers: header })
+    // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    return this.http.post<ResponseStatus>(environment.urlstring+'/viewdownload/share/' + this.fileids[index], new ShareRequestObject(shareformdata.useremail, sessionStorage.getItem("userid"), this.shareformdatapermission, this.fileids[index]))
       .subscribe(data => {
         debugger;
         console.log(data.status);
@@ -244,8 +248,8 @@ export class DashboardComponent implements OnInit {
       return;
     }
     debugger;
-    const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-    return this.http.post<ResponseStatus>('http://localhost:8080/viewdownload/sharebyversionid/' + this.fileidforversionshare, new ShareVersionRequest(shareformdata.useremail, sessionStorage.getItem("userid"), this.shareformdatapermission, this.fileidforversionshare), { headers: header })
+    // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
+    return this.http.post<ResponseStatus>(environment.urlstring+'/viewdownload/sharebyversionid/' + this.fileidforversionshare, new ShareVersionRequest(shareformdata.useremail, sessionStorage.getItem("userid"), this.shareformdatapermission, this.fileidforversionshare))
       .subscribe(data => {
         debugger;
         console.log(data.status);
@@ -310,12 +314,14 @@ export class DashboardComponent implements OnInit {
     this.firstarray = this.fileListobject.slice(0, index);
     this.secondtypearray=this.fileType.slice(index + 1, this.fileType.length);
     this.secondarray = this.fileListobject.slice(index + 1, this.fileListobject.length);
+    
     console.log(this.fileListobject + " ss " + this.firstarray + " ss " + this.secondarray);
     this.fileListobject = [];
     this.fileType=[];
     this.viewfileurls=[];
     this.downloadfileurls=[];
     console.log(this.fileType.length+"  "+this.fileListobject.length+" "+this.firstarray.length+" "+this.firsttypearray.length+" "+this.secondtypearray.length+" s "+this.secondarray.length);
+    
     for (let i = 0; i < this.firstarray.length; i++) {
       this.fileListobject.push(this.firstarray[i]);
       this.fileType.push(this.firsttypearray[i]);
@@ -323,6 +329,7 @@ export class DashboardComponent implements OnInit {
       this.downloadfileurls.push(this.firstdownloadurlarray[i]);
       console.log(this.firsttypearray[i]+"  f"+this.firstdownloadurlarray[i]+" "+this.firstviewurlarray[i]);
     }
+
     for (let i = 0; i < this.secondarray.length; i++) {
       this.fileListobject.push(this.secondarray[i]);
       this.fileType.push(this.secondtypearray[i]);
@@ -330,6 +337,7 @@ export class DashboardComponent implements OnInit {
       this.downloadfileurls.push(this.seconddownloadurlarray[i]);
       console.log(this.secondtypearray[i]+"  "+this.seconddownloadurlarray[i]+"  "+this.secondviewurlarray[i]);
     }
+
     for(let i=0;i<this.fileType.length;i++){
     console.log(i+" type "+this.fileType[i]);
     console.log(i+" type "+this.fileListobject[i].fileid);
@@ -358,12 +366,13 @@ export class DashboardComponent implements OnInit {
         this.versionListOfEachFileViewUrls[i] = [];
         this.versionListOfEachFileDownloadUrls[i] = [];
         this.versionListOfEachFileDeleteUrls[i]=[];
+    
         //for the purpose of versionlist view and downloads of versions
         for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
           console.log(this.versionListOfEachFile[i][j].versionname);
-          this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
-          this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
-          this.versionListOfEachFileDeleteUrls[i].push("http://localhost:8080/viewdownload/deleteVersion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileViewUrls[i].push(environment.urlstring+"/viewdownload/viewversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname + "");
+          this.versionListOfEachFileDownloadUrls[i].push(environment.urlstring+"/viewdownload/downloadversion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileDeleteUrls[i].push(environment.urlstring+"/viewdownload/deleteVersion/" + this.userid + "/" + this.versionListOfEachFile[i][j].versionname);
           console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
         }
         }

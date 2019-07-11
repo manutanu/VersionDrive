@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { LoadingScreenService } from 'app/loading-screen.service';
+import { environment } from 'environments/environment';
 
 interface Alert {
   type: string;
@@ -51,7 +52,7 @@ export class RegisterComponent implements OnInit {
           this.errorpasswordsnotsame=true;
           return ;
       }
-      let obs= this.http.post("http://localhost:8080/register", new RegisterRequest(formmodeldata.username,formmodeldata.password,formmodeldata.email));
+      let obs= this.http.post(environment.urlstring+"/register", new RegisterRequest(formmodeldata.username,formmodeldata.password,formmodeldata.email));
       obs.subscribe(data => {
         
           this.registerresponse=data;

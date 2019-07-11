@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from 'environments/environment';
 
 export class FileObjectForTransfere {
 
@@ -54,7 +55,7 @@ export class FileListService implements OnInit {
   getListOfFiles() {
 
     //const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
-    return this.http.get<FileObjectForTransfere[]>('http://localhost:8080/viewdownload/getallfiles/' + sessionStorage.getItem("userid"));
+    return this.http.get<FileObjectForTransfere[]>(environment.urlstring+'/viewdownload/getallfiles/' + sessionStorage.getItem("userid"));
     //.subscribe(
     //   response=>{
     //     for(let i=0; i< response.length;i++){
@@ -72,7 +73,7 @@ export class FileListService implements OnInit {
   getAllSharedFiles() {
     // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
     // , { headers: header }
-    return this.http.get<FileObjectForShared[]>('http://localhost:8080/viewdownload/shared/' + sessionStorage.getItem("userid"));
+    return this.http.get<FileObjectForShared[]>(environment.urlstring+'/viewdownload/shared/' + sessionStorage.getItem("userid"));
     //.subscribe(
     //   response=>{
     //     for(let i=0; i< response.length;i++){
@@ -90,7 +91,7 @@ export class FileListService implements OnInit {
   deletefile(fileid) {
     // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
     // , { headers: header }
-    return this.http.get('http://localhost:8080/viewdownload/deletefile/' + sessionStorage.getItem("userid") + "/" + fileid).subscribe(data => {
+    return this.http.get(environment.urlstring+'/viewdownload/deletefile/' + sessionStorage.getItem("userid") + "/" + fileid).subscribe(data => {
       
     });
     //.subscribe(
@@ -111,7 +112,7 @@ export class FileListService implements OnInit {
     // const header = new HttpHeaders().set("Authorization", `Bearer ${sessionStorage.getItem("token")}`);
     // , { headers: header }
     console.log("what is your problem bro "+fileid+"   "+userid);
-    return this.http.get('http://localhost:8080/viewdownload/deletefile/' + userid + "/" + fileid).subscribe(data => {
+    return this.http.get(environment.urlstring+'/viewdownload/deletefile/' + userid + "/" + fileid).subscribe(data => {
       
     });
     //.subscribe(

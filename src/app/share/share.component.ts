@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import { UploadFileService } from 'app/upload-file.service';
 import { LoadingScreenService } from 'app/loading-screen.service';
+import { environment } from 'environments/environment';
 
 interface Alert {
   type: string;
@@ -61,9 +62,9 @@ export class ShareComponent implements OnInit {
       this.fileListobject=data;
       //http://localhost:8080/viewdownload/view/{{userid}}/
       for(let i=0;i<this.fileListobject.length;i++){
-          console.log("http://localhost:8080/viewdownload/view/"+this.fileListobject[i].ownerid+"/"+this.fileListobject[i].fileid);
-          this.viewfileurls.push("http://localhost:8080/viewdownload/view/"+this.fileListobject[i].ownerid+"/"+this.fileListobject[i].fileid);
-          this.downloadfileurls.push("http://localhost:8080/viewdownload/download/"+this.fileListobject[i].ownerid+"/"+this.fileListobject[i].fileid);
+          console.log(environment.urlstring+"/viewdownload/view/"+this.fileListobject[i].ownerid+"/"+this.fileListobject[i].fileid);
+          this.viewfileurls.push(environment.urlstring+"/viewdownload/view/"+this.fileListobject[i].ownerid+"/"+this.fileListobject[i].fileid);
+          this.downloadfileurls.push(environment.urlstring+"/viewdownload/download/"+this.fileListobject[i].ownerid+"/"+this.fileListobject[i].fileid);
           this.viewflag.push(false);
           let name:String=this.fileListobject[i].filename;
           this.fileids.push(this.fileListobject[i].fileid);
@@ -75,9 +76,9 @@ export class ShareComponent implements OnInit {
         //for the purpose of versionlist view and downloads of versions
         for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
           console.log(this.versionListOfEachFile[i][j].versionname);
-          this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname + "");
-          this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
-          this.versionListOfEachFileDeleteUrls[i].push("http://localhost:8080/viewdownload/deleteVersion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileViewUrls[i].push(environment.urlstring+"/viewdownload/viewversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname + "");
+          this.versionListOfEachFileDownloadUrls[i].push(environment.urlstring+"/viewdownload/downloadversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
+          this.versionListOfEachFileDeleteUrls[i].push(environment.urlstring+"/viewdownload/deleteVersion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
           console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]);
         }
 
@@ -151,7 +152,7 @@ submitFormForShare(shareformdata,index){
   this.shareformsubmissionflag=true;
   // const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
   // ,{headers:header}
-     return this.http.post('http://localhost:8080/viewdownload/share/'+this.fileids[index],new ShareRequestObject(shareformdata.useremail,sessionStorage.getItem("userid"),shareformdata.permission,this.fileids[index]) )
+     return this.http.post(environment.urlstring+'/viewdownload/share/'+this.fileids[index],new ShareRequestObject(shareformdata.useremail,sessionStorage.getItem("userid"),shareformdata.permission,this.fileids[index]) )
      .subscribe(data =>{
       this.loadingScreenService.stopLoading();
      },
@@ -233,9 +234,9 @@ upload(i) {
       //for the purpose of versionlist view and downloads of versions
       for (let j = 0; j < this.versionListOfEachFile[i].length; j++) {
         console.log(this.versionListOfEachFile[i][j].versionname);
-        this.versionListOfEachFileViewUrls[i].push("http://localhost:8080/viewdownload/viewversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname + "");
-        this.versionListOfEachFileDownloadUrls[i].push("http://localhost:8080/viewdownload/downloadversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
-        this.versionListOfEachFileDeleteUrls[i].push("http://localhost:8080/viewdownload/deleteVersion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
+        this.versionListOfEachFileViewUrls[i].push(environment.urlstring+"/viewdownload/viewversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname + "");
+        this.versionListOfEachFileDownloadUrls[i].push(environment.urlstring+"/viewdownload/downloadversion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
+        this.versionListOfEachFileDeleteUrls[i].push(environment.urlstring+"/viewdownload/deleteVersion/" + this.fileListobject[i].ownerid + "/" + this.versionListOfEachFile[i][j].versionname);
         console.log(this.versionListOfEachFileViewUrls[i][j] + " urls " + this.versionListOfEachFileDownloadUrls[i][j]+"    "+this.fileListobject[i].ownerid );
       }
       }

@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoadingScreenService } from 'app/loading-screen.service';
+import { environment } from 'environments/environment';
 
 export class JwtRequest{
     constructor(public username: String ,public password:String){
@@ -34,7 +35,7 @@ export class LoginComponent{
         this.loadingScreenService.startLoading();
          let flag;
         console.log(formmodeldata.username+" "+formmodeldata.password);
-        let obs= this.http.post<JwtResponse>("http://localhost:8080/authenticate", new JwtRequest(formmodeldata.username,formmodeldata.password));
+        let obs= this.http.post<JwtResponse>(environment.urlstring+"/authenticate", new JwtRequest(formmodeldata.username,formmodeldata.password));
         obs.subscribe(data => {
             this.jwtresponse=data;
             if(this.jwtresponse.token.length>0)

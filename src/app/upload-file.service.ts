@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpRequest, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'environments/environment';
  
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,8 @@ export class UploadFileService {
  
     formdata.append('file', file);
     
-    const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
-    const req = new HttpRequest('POST', 'http://localhost:8080/upload/'+sessionStorage.getItem("userid"), formdata, {headers:header,
+    // const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
+    const req = new HttpRequest('POST', environment.urlstring+'/upload/'+sessionStorage.getItem("userid"), formdata, {
       reportProgress: true,
       responseType: 'text',
     });
@@ -28,8 +29,8 @@ export class UploadFileService {
  
     formdata.append('file', file);
     
-    const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
-    const req = new HttpRequest('POST', 'http://localhost:8080/uploadversion/'+sessionStorage.getItem("userid")+'/'+fileid, formdata, {headers:header,
+    // const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
+    const req = new HttpRequest('POST', environment.urlstring+'/uploadversion/'+sessionStorage.getItem("userid")+'/'+fileid, formdata, {
       reportProgress: true,
       responseType: 'text',
     });
@@ -42,8 +43,8 @@ pushFileVersionToStoragefromShare(file: File,fileid,userid): Observable<HttpEven
 
   formdata.append('file', file);
   
-  const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
-  const req = new HttpRequest('POST', 'http://localhost:8080/uploadversion/'+userid+'/'+fileid, formdata, {headers:header,
+  // const header = new HttpHeaders().set("Authorization",`Bearer ${sessionStorage.getItem("token")}`);
+  const req = new HttpRequest('POST', environment.urlstring+'/uploadversion/'+userid+'/'+fileid, formdata, {
     reportProgress: true,
     responseType: 'text',
   });
